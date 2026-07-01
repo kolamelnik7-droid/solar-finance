@@ -1,0 +1,2514 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#04060f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Фінанси">
+<title>Сонячна Система Фінансів</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=SF+Pro+Display:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --space: #04060f;
+  --glass: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.09);
+  --glass-strong: rgba(255,255,255,0.08);
+  --panel: rgba(12,18,40,0.7);
+  --income: #30d5a0;
+  --expense: #ff6b7a;
+  --saving: #b08fff;
+  --investment: #ffc947;
+  --debt: #ff7eb3;
+  --sun: #ffd060;
+  --sun-glow: #ff9500;
+  --text: #f0f2fa;
+  --text2: #9ba8c4;
+  --muted: #5a6482;
+  --accent: #7b6ef6;
+  --userA: #5ac8fa;
+  --userB: #ff6cae;
+  --border: rgba(255,255,255,0.08);
+  --r: 20px;
+  --r-lg: 26px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: -apple-system, 'Inter', BlinkMacSystemFont, sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--space);
+}
+
+/* ── COSMOS BACKGROUND ── */
+.cosmos-bg {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden;
+}
+.cosmos-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 120% 70% at 10% -10%, rgba(90,60,200,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 95% 5%, rgba(30,200,140,0.18) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 80% at 80% 100%, rgba(120,80,240,0.22) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 0% 90%, rgba(255,120,180,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(10,15,45,0.9) 0%, transparent 80%),
+    linear-gradient(160deg, #040610 0%, #06091a 50%, #030508 100%);
+  animation: nebulaDrift 40s ease-in-out infinite alternate;
+}
+.cosmos-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 60% 20%, rgba(100,140,255,0.10) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 35% at 20% 70%, rgba(200,100,255,0.08) 0%, transparent 45%);
+  animation: nebulaDrift2 55s ease-in-out infinite alternate;
+}
+@keyframes nebulaDrift {
+  0% { transform: scale(1) translate(0,0); }
+  100% { transform: scale(1.08) translate(1%,1.5%); }
+}
+@keyframes nebulaDrift2 {
+  0% { transform: scale(1) translate(0,0) rotate(0deg); }
+  100% { transform: scale(1.05) translate(-1%,1%) rotate(1deg); }
+}
+
+/* Stars */
+.stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.star {
+  position: absolute; border-radius: 50%;
+  animation: twinkle var(--d,3s) ease-in-out infinite;
+}
+.star.s { background: rgba(255,255,255,0.6); }
+.star.m { background: rgba(255,255,255,0.85); box-shadow: 0 0 3px rgba(255,255,255,0.4); }
+.star.l { background: white; box-shadow: 0 0 8px 2px var(--c,rgba(180,200,255,0.6)); }
+@keyframes twinkle {
+  0%,100% { opacity: var(--o,0.5); transform: scale(1); }
+  50% { opacity: calc(var(--o,0.5)*0.2); transform: scale(0.8); }
+}
+
+/* ── APP SHELL ── */
+.app {
+  position: relative; z-index: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 16px 100px;
+}
+
+/* ── HEADER ── */
+header {
+  padding: 56px 0 20px;
+  text-align: center;
+  position: relative;
+}
+.main-title {
+  font-size: clamp(1.6rem,6vw,2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  background: linear-gradient(135deg, #fff 0%, var(--sun) 50%, var(--accent) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.main-subtitle {
+  color: var(--text2); font-size: 0.82rem; margin-top: 6px; font-weight: 400; letter-spacing: 0.01em;
+}
+.sync-indicator {
+  position: absolute; top: 16px; right: 0;
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.6rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+}
+.sync-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #fbbf24; box-shadow: 0 0 6px #fbbf24;
+  animation: blink 1.2s infinite;
+}
+.sync-dot.ok { background: var(--income); box-shadow: 0 0 6px var(--income); animation: none; }
+.sync-dot.err { background: var(--expense); box-shadow: 0 0 6px var(--expense); animation: none; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+/* ── GLASS CARD ── */
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r);
+  position: relative;
+  overflow: hidden;
+}
+.glass::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+
+/* ── WHO SECTION ── */
+.who-section {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.who-label { color: var(--muted); font-size: 0.78rem; }
+.who-btn {
+  border: 1px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--text2);
+  border-radius: 50px;
+  padding: 7px 18px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-family: inherit;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
+}
+.who-btn.active-a {
+  background: rgba(90,200,250,0.15);
+  border-color: var(--userA);
+  color: var(--userA);
+  box-shadow: 0 0 16px rgba(90,200,250,0.2);
+}
+.who-btn.active-b {
+  background: rgba(255,108,174,0.15);
+  border-color: var(--userB);
+  color: var(--userB);
+  box-shadow: 0 0 16px rgba(255,108,174,0.2);
+}
+.currency-select {
+  border: 1px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--text);
+  border-radius: 50px;
+  padding: 7px 14px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-family: inherit;
+  font-weight: 600;
+  outline: none;
+  -webkit-appearance: none;
+}
+.currency-select option { background: #0d1530; color: var(--text); }
+
+/* ── MONTH NAV ── */
+.month-nav {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.nav-btn {
+  background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border); color: var(--text2);
+  width: 32px; height: 32px; border-radius: 50%;
+  cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+.month-label { font-weight: 600; font-size: 0.95rem; min-width: 150px; text-align: center; }
+.alltime-btn {
+  border: 1px solid var(--border); background: var(--glass);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  color: var(--muted); border-radius: 50px; padding: 6px 14px;
+  font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.alltime-btn.active { background: rgba(123,110,246,0.2); border-color: var(--accent); color: var(--accent); }
+
+/* ── SOLAR SYSTEM ── */
+.solar-wrapper { display: flex; justify-content: center; padding: 48px 0 56px; }
+.solar-system { position: relative; width: 320px; height: 320px; }
+@media (max-width: 380px) { .solar-system { width: 270px; height: 270px; } }
+
+/* Orbit rings */
+.orbit {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%); border-radius: 50%;
+}
+.orbit-income {
+  width: 170px; height: 170px;
+  border: 1px solid rgba(48,213,160,0.2);
+  box-shadow: 0 0 20px rgba(48,213,160,0.05) inset;
+}
+.orbit-expense {
+  width: 260px; height: 260px;
+  border: 1px solid rgba(255,107,122,0.15);
+  box-shadow: 0 0 20px rgba(255,107,122,0.04) inset;
+}
+@media (max-width: 380px) {
+  .orbit-income { width: 130px; height: 130px; }
+  .orbit-expense { width: 200px; height: 200px; }
+}
+
+/* ── SUN ── */
+.sun {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 88px; height: 88px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%,
+    #fff8e0 0%, #ffd060 25%, #ff9500 60%, #c45000 85%, #7a2e00 100%);
+  box-shadow:
+    0 0 0 1px rgba(255,208,96,0.3),
+    0 0 20px rgba(255,180,0,0.5),
+    0 0 50px rgba(255,140,0,0.3),
+    0 0 100px rgba(255,100,0,0.15);
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  z-index: 10; cursor: default;
+  animation: sunPulse 5s ease-in-out infinite;
+}
+/* Sun rays */
+.sun::before {
+  content: '';
+  position: absolute; inset: -20px; border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg, rgba(255,200,50,0.08) 10deg, transparent 20deg,
+    transparent 40deg, rgba(255,200,50,0.06) 50deg, transparent 60deg,
+    transparent 80deg, rgba(255,200,50,0.08) 90deg, transparent 100deg,
+    transparent 120deg, rgba(255,200,50,0.06) 130deg, transparent 140deg,
+    transparent 160deg, rgba(255,200,50,0.08) 170deg, transparent 180deg,
+    transparent 200deg, rgba(255,200,50,0.06) 210deg, transparent 220deg,
+    transparent 240deg, rgba(255,200,50,0.08) 250deg, transparent 260deg,
+    transparent 280deg, rgba(255,200,50,0.06) 290deg, transparent 300deg,
+    transparent 320deg, rgba(255,200,50,0.08) 330deg, transparent 340deg,
+    transparent 360deg
+  );
+  animation: sunRays 20s linear infinite;
+}
+@keyframes sunRays { to { transform: rotate(360deg); } }
+@keyframes sunPulse {
+  0%,100% { box-shadow: 0 0 0 1px rgba(255,208,96,0.3), 0 0 20px rgba(255,180,0,0.5), 0 0 50px rgba(255,140,0,0.3), 0 0 100px rgba(255,100,0,0.15); }
+  50% { box-shadow: 0 0 0 1px rgba(255,208,96,0.4), 0 0 30px rgba(255,180,0,0.7), 0 0 70px rgba(255,140,0,0.45), 0 0 130px rgba(255,100,0,0.25); }
+}
+.sun-balance { color: #1a0800; text-align: center; line-height: 1.3; z-index: 1; }
+.sun-balance .label { font-size: 0.38rem; letter-spacing: 0.15em; font-weight: 600; opacity: 0.7; text-transform: uppercase; display: block; }
+.sun-balance .amount { font-size: 0.72rem; font-weight: 700; display: block; }
+
+/* ── PLANET ORBITS (CSS animated) ── */
+@keyframes orbitCW { from{transform:translate(-50%,-50%) rotate(0deg)} to{transform:translate(-50%,-50%) rotate(360deg)} }
+@keyframes orbitCCW { from{transform:translate(-50%,-50%) rotate(0deg)} to{transform:translate(-50%,-50%) rotate(-360deg)} }
+@keyframes counterCW { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes counterCCW { from{transform:rotate(0deg)} to{transform:rotate(-360deg)} }
+
+.planet-orbit { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); border-radius: 50%; }
+#incomeOrbit { animation: orbitCW 22s linear infinite; }
+#expenseOrbit { animation: orbitCCW 38s linear infinite; }
+#incomeOrbit .planet { animation: counterCCW 22s linear infinite; }
+#expenseOrbit .planet { animation: counterCW 38s linear infinite; }
+
+.planet { position: absolute; border-radius: 50%; cursor: pointer; }
+.planet-inner {
+  width: 100%; height: 100%; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
+}
+.planet:hover .planet-inner { transform: scale(1.4); }
+.planet svg { width: 55%; height: 55%; }
+
+.planet-income {
+  width: 36px; height: 36px;
+  background: radial-gradient(circle at 35% 30%, rgba(180,255,235,0.9), var(--income) 55%, #0a6647);
+  box-shadow: 0 0 0 1px rgba(48,213,160,0.4), 0 0 14px rgba(48,213,160,0.5), 0 4px 12px rgba(0,0,0,0.4);
+}
+.planet-income svg { color: rgba(255,255,255,0.95); }
+
+.planet-expense {
+  width: 36px; height: 36px;
+  background: radial-gradient(circle at 35% 30%, rgba(255,200,205,0.9), var(--expense) 55%, #7a1520);
+  box-shadow: 0 0 0 1px rgba(255,107,122,0.4), 0 0 14px rgba(255,107,122,0.5), 0 4px 12px rgba(0,0,0,0.4);
+}
+.planet-expense svg { color: rgba(255,255,255,0.95); }
+
+.planet.author-a { outline: 2px solid var(--userA); outline-offset: 2px; }
+.planet.author-b { outline: 2px solid var(--userB); outline-offset: 2px; }
+
+/* ── BIG PLANETS ── */
+.big-planet {
+  position: absolute; border-radius: 50%; width: 36px; height: 36px; opacity: 0.5;
+  display: flex; align-items: center; justify-content: center;
+  transition: width 0.6s cubic-bezier(.34,1.2,.64,1), height 0.6s cubic-bezier(.34,1.2,.64,1), opacity 0.5s;
+  cursor: pointer; z-index: 5;
+}
+.big-planet svg { width: 44%; height: 44%; }
+
+.saving-planet {
+  top: -12px; left: -12px;
+  background: radial-gradient(circle at 35% 30%, rgba(220,200,255,0.9), var(--saving) 55%, #3b1a7a);
+  box-shadow: 0 0 0 1px rgba(176,143,255,0.5), 0 0 20px rgba(176,143,255,0.4), 0 4px 16px rgba(0,0,0,0.5);
+}
+.saving-planet svg { color: rgba(255,255,255,0.95); }
+/* Moon dots */
+.saving-planet::after {
+  content: ''; position: absolute;
+  width: 6px; height: 6px; border-radius: 50%; top: -10px; right: 2px;
+  background: rgba(176,143,255,0.7); box-shadow: 0 0 8px var(--saving);
+}
+
+.investment-planet {
+  bottom: -12px; right: -12px;
+  background: radial-gradient(circle at 35% 30%, rgba(255,240,185,0.9), var(--investment) 55%, #7a4a00);
+  box-shadow: 0 0 0 1px rgba(255,201,71,0.5), 0 0 20px rgba(255,201,71,0.4), 0 4px 16px rgba(0,0,0,0.5);
+}
+.investment-planet svg { color: rgba(255,255,255,0.95); }
+/* Saturn rings */
+.investment-planet::before {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  width: 170%; height: 38%;
+  border: 2px solid rgba(255,201,71,0.5);
+  border-radius: 50%;
+  transform: translate(-50%,-50%) rotate(-22deg);
+  box-shadow: 0 0 8px rgba(255,201,71,0.2);
+  pointer-events: none;
+}
+
+.debt-planet {
+  bottom: -12px; left: -12px;
+  background: radial-gradient(circle at 35% 30%, rgba(255,215,230,0.9), var(--debt) 55%, #7a1445);
+  box-shadow: 0 0 0 1px rgba(255,126,179,0.5), 0 0 20px rgba(255,126,179,0.4), 0 4px 16px rgba(0,0,0,0.5);
+}
+.debt-planet svg { color: rgba(255,255,255,0.95); }
+
+.big-planet-label {
+  position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  margin-top: 10px; text-align: center; white-space: nowrap; pointer-events: none;
+}
+.investment-planet .big-planet-label,
+.debt-planet .big-planet-label { top: auto; bottom: 100%; margin-bottom: 10px; }
+.bp-name { display: block; font-size: 0.56rem; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; opacity: 0.7; }
+.bp-amount { display: block; font-size: 0.8rem; font-weight: 700; }
+.saving-planet .big-planet-label { color: var(--saving); }
+.investment-planet .big-planet-label { color: var(--investment); }
+.debt-planet .big-planet-label { color: var(--debt); }
+
+/* ── STATS GRID ── */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.stat-card {
+  padding: 14px 16px; border-radius: var(--r);
+  background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border); position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+}
+.stat-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+.stat-value { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; }
+.stat-card.income .stat-value { color: var(--income); }
+.stat-card.expense .stat-value { color: var(--expense); }
+.stat-card.saving .stat-value { color: var(--saving); }
+.stat-card.investment .stat-value { color: var(--investment); }
+.stat-card.debt .stat-value { color: var(--debt); }
+.stat-card.balance .stat-value { color: var(--sun); }
+
+/* ── BREAKDOWN ── */
+.breakdown-card {
+  margin-bottom: 12px; padding: 16px 18px;
+  border-radius: var(--r);
+  background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border); position: relative; overflow: hidden;
+}
+.breakdown-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+}
+.breakdown-card h3 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); font-weight: 600; margin-bottom: 14px; }
+.cat-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.cat-bar-row:last-child { margin-bottom: 0; }
+.cat-bar-label { display: flex; align-items: center; gap: 7px; min-width: 120px; font-size: 0.78rem; color: var(--text); }
+.cat-bar-label svg { width: 14px; height: 14px; color: var(--expense); flex-shrink: 0; }
+.cat-bar-track { flex: 1; height: 5px; background: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
+.cat-bar-fill { height: 100%; background: linear-gradient(90deg, var(--expense), #ff9a6c); border-radius: 10px; transition: width 0.6s cubic-bezier(.34,1,.64,1); }
+.cat-bar-value { font-size: 0.7rem; color: var(--muted); min-width: 80px; text-align: right; white-space: nowrap; }
+
+/* ── GOALS PANEL ── */
+.goals-section { margin-bottom: 12px; }
+.goals-toggle {
+  width: 100%; padding: 14px 18px;
+  border-radius: var(--r); border: 1px solid var(--glass-border);
+  background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  color: var(--text); font-family: inherit; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+  transition: border-color 0.2s; position: relative; overflow: hidden;
+}
+.goals-toggle::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+}
+.goals-toggle:hover { border-color: var(--accent); }
+.goals-panel {
+  border: 1px solid var(--glass-border); border-top: none;
+  border-radius: 0 0 var(--r) var(--r);
+  padding: 16px 18px;
+  background: rgba(8,12,30,0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+.goal-row { margin-bottom: 18px; }
+.goal-row label { display: block; font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; font-weight: 600; }
+.goal-input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.goal-input-row input {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px;
+  color: var(--text); padding: 8px 12px; font-family: inherit; font-size: 0.85rem; width: 130px; outline: none;
+  transition: border-color 0.2s;
+}
+.goal-input-row input:focus { border-color: var(--accent); }
+.goal-progress-text { font-size: 0.75rem; color: var(--saving); }
+.progress-track { height: 6px; background: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 10px; transition: width 0.6s cubic-bezier(.34,1,.64,1); }
+.progress-fill.saving { background: linear-gradient(90deg, #5b21b6, var(--saving)); }
+.progress-fill.ok { background: linear-gradient(90deg, #065f46, var(--income)); }
+.progress-fill.warn { background: linear-gradient(90deg, #92400e, var(--investment)); }
+.progress-fill.over { background: linear-gradient(90deg, #7f1d1d, var(--expense)); }
+.budgets-title { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; margin-bottom: 12px; }
+
+/* ── GOALS ── */
+.goals-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+
+.goal-card {
+  background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+  border-radius: 16px; padding: 14px 16px; position: relative; overflow: hidden;
+}
+.goal-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+}
+.goal-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.goal-card-name { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+.goal-card-del {
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  font-size: 0.75rem; padding: 2px 6px; border-radius: 6px; transition: all 0.2s;
+}
+.goal-card-del:hover { color: var(--expense); background: rgba(255,107,122,0.1); }
+
+.goal-amounts { display: flex; align-items: baseline; gap: 6px; margin-bottom: 8px; }
+.goal-current { font-size: 1.1rem; font-weight: 700; }
+.goal-target { font-size: 0.78rem; color: var(--muted); }
+.goal-pct { font-size: 0.78rem; font-weight: 700; margin-left: auto; }
+
+.goal-progress-bar { height: 6px; background: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
+.goal-progress-inner { height: 100%; border-radius: 10px; transition: width 0.6s cubic-bezier(.34,1,.64,1); }
+.goal-progress-inner.great { background: linear-gradient(90deg, #065f46, var(--income)); }
+.goal-progress-inner.good { background: linear-gradient(90deg, #5b21b6, var(--saving)); }
+.goal-progress-inner.warn { background: linear-gradient(90deg, #92400e, var(--investment)); }
+.goal-progress-inner.over { background: linear-gradient(90deg, var(--income), #a3e635); }
+
+.goal-deadline { display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem; color: var(--muted); }
+.goal-days { font-weight: 600; }
+.goal-days.urgent { color: var(--expense); }
+.goal-days.soon { color: var(--investment); }
+.goal-days.ok { color: var(--income); }
+.goal-days.done { color: var(--income); }
+.goal-rate { font-size: 0.68rem; color: var(--muted); text-align: right; }
+
+/* Goal add form */
+.goal-add-form {
+  background: rgba(123,110,246,0.06); border: 1px dashed rgba(123,110,246,0.3);
+  border-radius: 14px; padding: 14px;
+}
+.goal-form-title { font-size: 0.78rem; color: var(--accent); font-weight: 600; margin-bottom: 10px; }
+.goal-form-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.goal-text-input {
+  flex: 1; min-width: 140px; background: rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text);
+  font-family: inherit; font-size: 0.85rem; padding: 9px 12px; outline: none;
+  transition: border-color 0.2s;
+}
+.goal-text-input:focus { border-color: var(--accent); }
+.goal-num-input {
+  flex: 1; min-width: 100px; background: rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text);
+  font-family: inherit; font-size: 0.85rem; padding: 9px 12px; outline: none;
+  transition: border-color 0.2s;
+}
+.goal-num-input:focus { border-color: var(--accent); }
+.goal-date-input {
+  flex: 1; min-width: 130px; background: rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text);
+  font-family: inherit; font-size: 0.82rem; padding: 9px 12px; outline: none;
+  transition: border-color 0.2s; -webkit-appearance: none;
+  color-scheme: dark;
+}
+.goal-date-input:focus { border-color: var(--accent); }
+.goal-add-btn {
+  width: 100%; background: linear-gradient(135deg, rgba(123,110,246,0.4), rgba(80,60,200,0.4));
+  border: 1px solid rgba(123,110,246,0.4); border-radius: 12px; color: var(--accent);
+  font-family: inherit; font-size: 0.85rem; font-weight: 600; padding: 9px;
+  cursor: pointer; transition: all 0.2s;
+}
+.goal-add-btn:hover { background: linear-gradient(135deg, rgba(123,110,246,0.6), rgba(80,60,200,0.6)); color: white; }
+
+.goals-divider { height: 1px; background: var(--glass-border); margin: 18px 0 14px; }
+.budget-row { display: grid; grid-template-columns: 1fr 60px; gap: 8px 10px; margin-bottom: 12px; font-size: 0.78rem; align-items: center; }
+.budget-label { display: flex; align-items: center; gap: 6px; color: var(--text); grid-column: 1; }
+.budget-label svg { width: 14px; height: 14px; color: var(--muted); flex-shrink: 0; }
+.budget-row input {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px;
+  color: var(--text); padding: 5px 8px; font-family: inherit; font-size: 0.75rem; width: 100%; outline: none;
+  grid-column: 2;
+}
+.budget-row input:focus { border-color: var(--accent); }
+.budget-bar-wrap { grid-column: 1; }
+.budget-value { grid-column: 2; color: var(--muted); font-size: 0.7rem; text-align: right; white-space: nowrap; }
+
+/* ── ADD SECTION ── */
+.add-section {
+  margin-bottom: 12px; padding: 18px;
+  border-radius: var(--r-lg); border: 1px solid var(--glass-border);
+  background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  position: relative; overflow: hidden;
+}
+.add-section::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+.add-section h2 { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 14px; font-weight: 600; }
+
+/* Type toggle */
+.type-toggle { display: flex; flex-wrap: wrap; border-radius: 14px; overflow: hidden; background: rgba(0,0,0,0.2); margin-bottom: 12px; padding: 3px; gap: 3px; }
+.type-btn {
+  flex: 1 1 calc(33% - 4px); padding: 9px 6px; border: none;
+  cursor: pointer; font-family: inherit; font-size: 0.78rem; font-weight: 600;
+  transition: all 0.2s cubic-bezier(.34,1.2,.64,1);
+  background: transparent; color: var(--muted); border-radius: 11px;
+  display: flex; align-items: center; justify-content: center; gap: 5px; white-space: nowrap;
+}
+.type-btn svg { width: 14px; height: 14px; }
+.type-btn.active[data-type="income"] { background: rgba(48,213,160,0.2); color: var(--income); box-shadow: 0 0 12px rgba(48,213,160,0.15); }
+.type-btn.active[data-type="expense"] { background: rgba(255,107,122,0.2); color: var(--expense); box-shadow: 0 0 12px rgba(255,107,122,0.15); }
+.type-btn.active[data-type="saving"] { background: rgba(176,143,255,0.2); color: var(--saving); box-shadow: 0 0 12px rgba(176,143,255,0.15); }
+.type-btn.active[data-type="investment"] { background: rgba(255,201,71,0.2); color: var(--investment); box-shadow: 0 0 12px rgba(255,201,71,0.15); }
+.type-btn.active[data-type="debt"] { background: rgba(255,126,179,0.2); color: var(--debt); box-shadow: 0 0 12px rgba(255,126,179,0.15); }
+
+/* Templates */
+.templates-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 12px; scrollbar-width: none; }
+.templates-row::-webkit-scrollbar { display: none; }
+.template-chip {
+  flex-shrink: 0; display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 50px;
+  padding: 6px 14px; font-size: 0.76rem; color: var(--text2); cursor: pointer;
+  white-space: nowrap; transition: all 0.2s;
+}
+.template-chip:hover { border-color: var(--accent); color: var(--text); }
+.template-chip svg { width: 13px; height: 13px; }
+.tpl-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.7rem; padding: 0 0 0 3px; }
+.tpl-del:hover { color: var(--expense); }
+.template-add {
+  flex-shrink: 0; display: flex; align-items: center; gap: 6px;
+  background: rgba(123,110,246,0.1); border: 1px dashed rgba(123,110,246,0.4);
+  border-radius: 50px; padding: 6px 14px; font-size: 0.76rem; color: var(--accent); cursor: pointer;
+}
+
+/* Debt row */
+.debt-row { display: none; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.debt-row.visible { display: flex; }
+.debt-direction { display: flex; border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border); flex-shrink: 0; }
+.debt-direction button {
+  padding: 9px 14px; border: none; border-right: 1px solid var(--glass-border);
+  cursor: pointer; font-family: inherit; font-size: 0.78rem; font-weight: 600;
+  background: rgba(0,0,0,0.2); color: var(--muted); transition: all 0.2s; white-space: nowrap;
+}
+.debt-direction button:last-child { border-right: none; }
+.debt-direction button.active { background: rgba(255,126,179,0.18); color: var(--debt); }
+.debt-row input {
+  flex: 1; min-width: 140px; background: rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text);
+  font-family: inherit; font-size: 0.85rem; padding: 9px 14px; outline: none;
+  transition: border-color 0.2s;
+}
+.debt-row input:focus { border-color: var(--debt); }
+
+/* Form row */
+.form-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.form-row input, .form-row select {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+  border-radius: 14px; color: var(--text);
+  font-family: inherit; font-size: 0.88rem; padding: 11px 14px; outline: none;
+  transition: border-color 0.2s; -webkit-appearance: none;
+}
+.form-row input:focus, .form-row select:focus { border-color: var(--accent); }
+.form-row input[name="desc"] { flex: 2; min-width: 120px; }
+.form-row input[name="amount"] { flex: 1; min-width: 80px; }
+.form-row select { flex: 1; min-width: 130px; cursor: pointer; }
+.form-row select option { background: #0d1530; }
+.amount-currency {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+  border-radius: 14px; color: var(--text); font-family: inherit; font-size: 0.85rem;
+  padding: 11px 10px; outline: none; cursor: pointer; flex: 0 0 60px; -webkit-appearance: none;
+}
+.amount-currency option { background: #0d1530; }
+
+.add-btn {
+  background: linear-gradient(135deg, #8b7ff8, #6052d4);
+  border: none; border-radius: 14px; color: white; cursor: pointer;
+  font-family: inherit; font-size: 0.88rem; font-weight: 700;
+  padding: 11px 22px;
+  box-shadow: 0 4px 20px rgba(123,110,246,0.4), 0 1px 0 rgba(255,255,255,0.1) inset;
+  transition: all 0.2s cubic-bezier(.34,1.2,.64,1); white-space: nowrap;
+}
+.add-btn:hover { transform: scale(1.03); box-shadow: 0 6px 24px rgba(123,110,246,0.5); }
+.add-btn:active { transform: scale(0.97); }
+.add-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.cancel-btn {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+  border-radius: 14px; color: var(--muted); cursor: pointer;
+  font-family: inherit; font-size: 0.88rem; font-weight: 600;
+  padding: 11px 18px; transition: all 0.2s; white-space: nowrap;
+}
+.cancel-btn:hover { color: var(--expense); border-color: var(--expense); }
+
+/* Export */
+.export-row { text-align: center; margin: 6px 0 16px; }
+.export-btn {
+  background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+  color: var(--muted); border-radius: 50px; padding: 9px 22px;
+  font-size: 0.78rem; font-family: inherit; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.export-btn:hover { color: var(--income); border-color: var(--income); background: rgba(48,213,160,0.08); }
+
+/* ── TRANSACTIONS ── */
+.transactions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .transactions { grid-template-columns: 1fr; } }
+
+.tx-col h3 {
+  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.tx-col h3 svg { width: 14px; height: 14px; }
+.tx-col.income h3 { color: var(--income); }
+.tx-col.expense h3 { color: var(--expense); }
+.tx-col.saving h3 { color: var(--saving); }
+.tx-col.investment h3 { color: var(--investment); }
+.tx-col.debt h3 { color: var(--debt); }
+
+.tx-list { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; scrollbar-width: none; }
+.tx-list::-webkit-scrollbar { display: none; }
+
+.tx-item {
+  background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border); border-radius: var(--r);
+  padding: 11px 13px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  animation: slideIn 0.3s cubic-bezier(.34,1.2,.64,1);
+  position: relative; overflow: hidden;
+}
+.tx-item::after {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 0 2px 2px 0;
+}
+.tx-item.income::after { background: var(--income); }
+.tx-item.expense::after { background: var(--expense); }
+.tx-item.saving::after { background: var(--saving); }
+.tx-item.investment::after { background: var(--investment); }
+.tx-item.debt::after { background: var(--debt); }
+
+@keyframes slideIn { from { opacity:0; transform:translateY(-8px) scale(0.96); } to { opacity:1; transform:none; } }
+
+.tx-icon {
+  width: 30px; height: 30px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  background: rgba(255,255,255,0.06);
+}
+.tx-icon svg { width: 16px; height: 16px; }
+.tx-item.income .tx-icon svg { color: var(--income); }
+.tx-item.expense .tx-icon svg { color: var(--expense); }
+.tx-item.saving .tx-icon svg { color: var(--saving); }
+.tx-item.investment .tx-icon svg { color: var(--investment); }
+.tx-item.debt .tx-icon svg { color: var(--debt); }
+
+.tx-info { flex: 1; min-width: 0; }
+.tx-desc { font-size: 0.83rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tx-meta { font-size: 0.64rem; color: var(--muted); margin-top: 3px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+
+.author-tag { padding: 1px 6px; border-radius: 6px; font-weight: 700; font-size: 0.62rem; }
+.author-tag.a { background: rgba(90,200,250,0.15); color: var(--userA); }
+.author-tag.b { background: rgba(255,108,174,0.15); color: var(--userB); }
+.debt-tag { padding: 1px 6px; border-radius: 6px; font-weight: 600; font-size: 0.62rem; background: rgba(255,126,179,0.12); color: var(--debt); }
+
+.tx-amount { font-size: 0.83rem; font-weight: 700; white-space: nowrap; letter-spacing: -0.01em; }
+.tx-amount.income { color: var(--income); }
+.tx-amount.expense { color: var(--expense); }
+.tx-amount.saving { color: var(--saving); }
+.tx-amount.investment { color: var(--investment); }
+.tx-amount.debt { color: var(--debt); }
+
+.tx-actions { display: flex; gap: 2px; flex-shrink: 0; }
+.tx-edit, .tx-del {
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  font-size: 0.78rem; padding: 3px 5px; border-radius: 8px; transition: all 0.2s;
+}
+.tx-edit:hover { color: var(--accent); background: rgba(123,110,246,0.1); }
+.tx-del:hover { color: var(--expense); background: rgba(255,107,122,0.1); }
+
+.empty-msg { text-align: center; color: var(--muted); font-size: 0.78rem; padding: 22px 10px; }
+
+/* ── FAB (Quick Add) ── */
+.fab {
+  position: fixed; bottom: 28px; right: 20px; z-index: 100;
+  width: 56px; height: 56px; border-radius: 18px;
+  background: linear-gradient(135deg, #8b7ff8, #6052d4);
+  box-shadow: 0 8px 28px rgba(123,110,246,0.5), 0 1px 0 rgba(255,255,255,0.15) inset;
+  border: none; color: white; font-size: 1.6rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s cubic-bezier(.34,1.56,.64,1);
+}
+.fab:hover { transform: scale(1.1); box-shadow: 0 12px 36px rgba(123,110,246,0.6); }
+.fab:active { transform: scale(0.94); }
+
+/* ── OFFLINE BANNER ── */
+.offline-banner {
+  background: rgba(255,107,122,0.15); border: 1px solid rgba(255,107,122,0.3);
+  border-radius: 12px; padding: 10px 14px; font-size: 0.78rem; color: var(--expense);
+  margin-bottom: 12px; text-align: center;
+}
+
+/* ── SEARCH BAR ── */
+.search-bar {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+  background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border); border-radius: var(--r);
+  padding: 10px 14px;
+}
+.search-bar svg { width: 16px; height: 16px; color: var(--muted); flex-shrink: 0; }
+.search-bar input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text); font-family: inherit; font-size: 0.88rem;
+  placeholder-color: var(--muted);
+}
+.search-bar input::placeholder { color: var(--muted); }
+.search-bar select {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
+  border-radius: 10px; color: var(--text2); font-family: inherit; font-size: 0.76rem;
+  padding: 5px 8px; outline: none; cursor: pointer; -webkit-appearance: none;
+}
+.search-bar select option { background: #0d1530; }
+
+/* ── CHART ── */
+.chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.chart-header h3 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); font-weight: 600; }
+#trendChart { width: 100% !important; }
+
+/* ── COMPARE ROW ── */
+.compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.compare-card {
+  padding: 14px 16px; border-radius: var(--r);
+  background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border); position: relative; overflow: hidden;
+}
+.compare-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+}
+.compare-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+.compare-value { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+.compare-sub { font-size: 0.68rem; color: var(--muted); margin-top: 3px; }
+
+/* ── RECURRING TOGGLE ── */
+.recurring-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.recurring-toggle { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
+.recurring-toggle input { opacity: 0; width: 0; height: 0; }
+.rec-slider {
+  position: absolute; inset: 0; border-radius: 22px; cursor: pointer;
+  background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);
+  transition: all 0.3s;
+}
+.rec-slider::before {
+  content: ''; position: absolute;
+  width: 16px; height: 16px; left: 2px; top: 2px;
+  background: var(--muted); border-radius: 50%;
+  transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+.recurring-toggle input:checked + .rec-slider { background: rgba(123,110,246,0.4); border-color: var(--accent); }
+.recurring-toggle input:checked + .rec-slider::before { transform: translateX(18px); background: var(--accent); box-shadow: 0 0 8px rgba(123,110,246,0.6); }
+.recurring-label { font-size: 0.82rem; color: var(--text2); }
+
+/* Recurring badge in tx list */
+.rec-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 1px 6px; border-radius: 6px; font-size: 0.6rem; font-weight: 700;
+  background: rgba(123,110,246,0.15); color: var(--accent);
+}
+
+/* ── TOP-3 ── */
+.top3-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--glass-border);
+}
+.top3-item:last-child { border-bottom: none; }
+.top3-rank {
+  width: 24px; height: 24px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 800; flex-shrink: 0;
+}
+.top3-rank.r1 { background: rgba(255,215,0,0.2); color: #ffd700; }
+.top3-rank.r2 { background: rgba(200,200,200,0.15); color: #c0c0c0; }
+.top3-rank.r3 { background: rgba(180,100,0,0.2); color: #cd7f32; }
+.top3-desc { flex: 1; min-width: 0; }
+.top3-name { font-size: 0.82rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top3-cat { font-size: 0.65rem; color: var(--muted); margin-top: 1px; }
+.top3-amount { font-size: 0.88rem; font-weight: 700; color: var(--expense); white-space: nowrap; }
+
+/* ── 50/30/20 ── */
+.rule-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+.rule-hint { font-size: 0.62rem; color: var(--muted); }
+.rule-bar-row { margin-bottom: 12px; }
+.rule-bar-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.78rem; }
+.rule-bar-name { font-weight: 600; }
+.rule-bar-pcts { font-size: 0.7rem; color: var(--muted); }
+.rule-bar-track { height: 8px; background: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
+.rule-bar-fill { height: 100%; border-radius: 10px; transition: width 0.6s cubic-bezier(.34,1,.64,1); }
+.rule-needs { background: linear-gradient(90deg, #1d4ed8, #60a5fa); }
+.rule-wants { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+.rule-save { background: linear-gradient(90deg, #065f46, #30d5a0); }
+.rule-status { font-size: 0.68rem; margin-top: 3px; }
+.rule-ok { color: var(--income); }
+.rule-warn { color: var(--investment); }
+.rule-over { color: var(--expense); }
+
+/* ── EXPORT CARD ── */
+.export-card {
+  background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border); border-radius: var(--r);
+  padding: 16px; margin: 6px 0 16px;
+}
+.export-title { font-size: 0.78rem; font-weight: 600; color: var(--text2); margin-bottom: 12px; }
+.export-dates { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.export-dates .goal-date-input { flex: 1; min-width: 130px; }
+.export-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.export-btns .export-btn { flex: 1; }
+
+/* ── THEME TOGGLE ── */
+.theme-toggle {
+  position: absolute; top: 16px; left: 0;
+  background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border); border-radius: 50%;
+  width: 32px; height: 32px; font-size: 0.9rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.theme-toggle:hover { border-color: var(--accent); }
+
+/* ── LIGHT THEME ── */
+body.light {
+  --glass: rgba(255,255,255,0.6);
+  --glass-border: rgba(0,0,0,0.08);
+  --text: #1a1f36;
+  --text2: #4a5282;
+  --muted: #8892b0;
+  background-color: #f0f2fa;
+  background-image:
+    radial-gradient(ellipse 120% 70% at 10% -10%, rgba(180,160,255,0.2) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 95% 5%, rgba(100,220,190,0.12) 0%, transparent 50%),
+    linear-gradient(160deg, #eef0fa 0%, #f5f0ff 50%, #eafaff 100%);
+}
+body.light .cosmos-bg { opacity: 0.2; }
+body.light .stars { opacity: 0.1; }
+body.light .main-title {
+  background: linear-gradient(135deg, #3730a3, #7c3aed, #1d4ed8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+body.light .sun-balance { color: #2a1000; }
+
+/* ── NOTIF BANNER ── */
+.notif-banner {
+  background: rgba(123,110,246,0.1); border: 1px solid rgba(123,110,246,0.25);
+  border-radius: 12px; padding: 10px 14px; font-size: 0.78rem; color: var(--accent);
+  margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.notif-btn {
+  background: rgba(123,110,246,0.2); border: 1px solid rgba(123,110,246,0.4);
+  border-radius: 8px; color: var(--accent); font-family: inherit; font-size: 0.75rem;
+  font-weight: 600; padding: 5px 10px; cursor: pointer; white-space: nowrap;
+}
+
+/* ── TOOLTIP ── */
+.tooltip {
+  position: fixed; background: rgba(10,15,35,0.95); backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border); border-radius: 12px;
+  padding: 9px 13px; font-size: 0.73rem; pointer-events: none;
+  z-index: 200; opacity: 0; transition: opacity 0.2s; max-width: 200px; line-height: 1.5;
+}
+.tooltip.visible { opacity: 1; }
+.tooltip b { font-weight: 700; color: var(--text); }
+
+</style>
+</head>
+<body>
+
+<div class="cosmos-bg"></div>
+<div class="stars" id="stars"></div>
+
+<div class="app">
+  <div class="offline-banner" id="offlineBanner" style="display:none">
+    📵 Офлайн — дані збережено локально, синхронізуємо при підключенні
+  </div>
+  <div class="notif-banner" id="notifBanner" style="display:none">
+    🔔 Вмикай сповіщення — будемо нагадувати про витрати
+    <button class="notif-btn" onclick="requestNotifPermission()">Увімкнути</button>
+  </div>
+  <header>
+    <div class="sync-indicator">
+      <span class="sync-dot" id="connDot"></span>
+      <span id="connText">з'єднання...</span>
+    </div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Змінити тему">🌙</button>
+    <h1 class="main-title">Сонячна Система Фінансів</h1>
+    <p class="main-subtitle">Спільний космічний бюджет · Коля &amp; Анна</p>
+  </header>
+
+  <!-- Хто + валюта -->
+  <div class="who-section">
+    <span class="who-label">Хто:</span>
+    <button class="who-btn" id="whoA" onclick="setUser('a')">🔵 Коля</button>
+    <button class="who-btn" id="whoB" onclick="setUser('b')">🌸 Анна</button>
+    <select class="currency-select" id="currencySelect" onchange="setCurrency(this.value)">
+      <option value="UAH">₴ Гривня</option>
+      <option value="CZK">Kč Крона</option>
+      <option value="USD">$ Долар</option>
+      <option value="EUR">€ Євро</option>
+    </select>
+  </div>
+
+  <!-- Місяць -->
+  <div class="month-nav">
+    <button class="nav-btn" onclick="prevMonth()">‹</button>
+    <span class="month-label" id="monthLabel">—</span>
+    <button class="nav-btn" id="nextMonthBtn" onclick="nextMonth()">›</button>
+    <button class="alltime-btn" id="allTimeBtn" onclick="toggleAllTime()">Весь час</button>
+  </div>
+
+  <!-- Пошук -->
+  <div class="search-bar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Пошук по назві..." oninput="onSearch(this.value)">
+    <select id="filterType" onchange="onSearch(document.getElementById('searchInput').value)">
+      <option value="">Всі типи</option>
+      <option value="income">Дохід</option>
+      <option value="expense">Витрата</option>
+      <option value="saving">Заощадження</option>
+      <option value="investment">Інвестиції</option>
+      <option value="debt">Борг</option>
+    </select>
+  </div>
+
+  <!-- Сонячна система -->
+  <div class="solar-wrapper">
+    <div class="solar-system" id="solarSystem">
+      <div class="orbit orbit-income"></div>
+      <div class="orbit orbit-expense"></div>
+      <div class="planet-orbit" id="incomeOrbit"></div>
+      <div class="planet-orbit" id="expenseOrbit"></div>
+
+      <div class="big-planet saving-planet" id="savingPlanet">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M18.3 12A6 6 0 0 0 12 6H8.5A6.5 6.5 0 0 0 2 12.5V14a2 2 0 0 0 2 2h.1A6 6 0 0 0 10 19.9V22h2v-2h2v2h2v-2.1A6 6 0 0 0 20 16.1V16a2 2 0 0 0 2-2v-1.7A6 6 0 0 0 18.3 12ZM15 12.5a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="big-planet-label">
+          <span class="bp-name">Заощадження</span>
+          <span class="bp-amount" id="savingAmount">0</span>
+        </div>
+      </div>
+
+      <div class="big-planet investment-planet" id="investmentPlanet">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="big-planet-label">
+          <span class="bp-name">Інвестиції</span>
+          <span class="bp-amount" id="investmentAmount">0</span>
+        </div>
+      </div>
+
+      <div class="big-planet debt-planet" id="debtPlanet">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2ZM2 10h20M7 15h2M11 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="big-planet-label">
+          <span class="bp-name">Борги</span>
+          <span class="bp-amount" id="debtAmount">0</span>
+        </div>
+      </div>
+
+      <div class="sun">
+        <div class="sun-balance">
+          <span class="label">БАЛАНС</span>
+          <span class="amount" id="sunBalance">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Статистика -->
+  <div class="stats-grid">
+    <div class="stat-card income">
+      <div class="stat-label">Доходи</div>
+      <div class="stat-value" id="statIncome">0</div>
+    </div>
+    <div class="stat-card expense">
+      <div class="stat-label">Витрати</div>
+      <div class="stat-value" id="statExpense">0</div>
+    </div>
+    <div class="stat-card saving">
+      <div class="stat-label">Заощадження</div>
+      <div class="stat-value" id="statSaving">0</div>
+    </div>
+    <div class="stat-card investment">
+      <div class="stat-label">Інвестиції</div>
+      <div class="stat-value" id="statInvestment">0</div>
+    </div>
+    <div class="stat-card debt">
+      <div class="stat-label">Борги (нетто)</div>
+      <div class="stat-value" id="statDebt">0</div>
+    </div>
+    <div class="stat-card balance">
+      <div class="stat-label">Баланс</div>
+      <div class="stat-value" id="statBalance">0</div>
+    </div>
+  </div>
+
+  <!-- Графік -->
+  <div class="breakdown-card" style="margin-bottom:12px">
+    <div class="chart-header">
+      <h3>Динаміка за 6 місяців</h3>
+    </div>
+    <canvas id="trendChart" height="120"></canvas>
+  </div>
+
+  <!-- Порівняння + прогноз -->
+  <div class="compare-row">
+    <div class="compare-card">
+      <div class="compare-label">vs минулий місяць</div>
+      <div class="compare-value" id="compareVal">—</div>
+      <div class="compare-sub" id="compareSub"></div>
+    </div>
+    <div class="compare-card">
+      <div class="compare-label">Прогноз на кінець місяця</div>
+      <div class="compare-value" id="forecastVal">—</div>
+      <div class="compare-sub" id="forecastSub"></div>
+    </div>
+  </div>
+
+  <!-- Топ витрат -->
+  <div class="breakdown-card">
+    <h3>Топ категорій витрат</h3>
+    <div id="catBars"><div class="empty-msg">Немає витрат за цей період</div></div>
+  </div>
+
+  <!-- Топ-3 найдорожчих -->
+  <div class="breakdown-card">
+    <h3>Найдорожче цього місяця</h3>
+    <div id="top3List"><div class="empty-msg">Немає записів</div></div>
+  </div>
+
+  <!-- 50/30/20 -->
+  <div class="breakdown-card">
+    <div class="rule-header">
+      <h3>Правило 50 / 30 / 20</h3>
+      <span class="rule-hint">потреби / бажання / заощадження</span>
+    </div>
+    <div id="rule502030"><div class="empty-msg">Додай доходи щоб побачити розподіл</div></div>
+  </div>
+
+  <!-- Борги -->
+  <div class="breakdown-card">
+    <h3>Хто кому винен</h3>
+    <div id="debtBars"><div class="empty-msg">Немає боргів</div></div>
+  </div>
+
+  <!-- Цілі та бюджети -->
+  <div class="goals-section">
+    <button class="goals-toggle" onclick="toggleGoals()">
+      <span>🎯 Цілі та бюджети</span>
+      <span id="goalsArrow">▾</span>
+    </button>
+    <div class="goals-panel" id="goalsPanel" style="display:none">
+
+      <!-- Список цілей -->
+      <div class="goals-list" id="goalsList"></div>
+
+      <!-- Форма нової цілі -->
+      <div class="goal-add-form" id="goalAddForm">
+        <div class="goal-form-title">+ Нова ціль</div>
+        <div class="goal-form-row">
+          <input type="text" id="goalName" placeholder="Назва (напр. На машину)" class="goal-text-input">
+        </div>
+        <div class="goal-form-row">
+          <input type="number" id="goalAmount" placeholder="Сума ₴" min="0" step="1" class="goal-num-input">
+          <input type="date" id="goalDeadline" class="goal-date-input">
+        </div>
+        <button class="goal-add-btn" onclick="addGoal()">Додати ціль</button>
+      </div>
+
+      <div class="goals-divider"></div>
+      <div class="budgets-title">Місячні ліміти витрат</div>
+      <div id="budgetsList"></div>
+    </div>
+  </div>
+
+  <!-- Форма -->
+  <div class="add-section" id="addSection">
+    <h2>Додати запис</h2>
+    <div class="type-toggle" id="typeToggle">
+      <button class="type-btn active" data-type="income" onclick="setType('income')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M22 7 13.5 15.5l-5-5L2 17M22 7h-7M22 7v7"/></svg>
+        Дохід
+      </button>
+      <button class="type-btn" data-type="expense" onclick="setType('expense')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M22 17 13.5 8.5l-5 5L2 7M22 17h-7M22 17v-7"/></svg>
+        Витрата
+      </button>
+      <button class="type-btn" data-type="saving" onclick="setType('saving')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M18.3 12A6 6 0 0 0 12 6H8.5A6.5 6.5 0 0 0 2 12.5V14a2 2 0 0 0 2 2h.1A6 6 0 0 0 10 19.9V22h2v-2h2v2h2v-2.1A6 6 0 0 0 20 16.1V16a2 2 0 0 0 2-2v-1.7A6 6 0 0 0 18.3 12Z"/></svg>
+        Заощадження
+      </button>
+      <button class="type-btn" data-type="investment" onclick="setType('investment')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+        Інвестиції
+      </button>
+      <button class="type-btn" data-type="debt" onclick="setType('debt')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2ZM2 10h20M7 15h2M11 15h4"/></svg>
+        Борг
+      </button>
+    </div>
+
+    <div class="templates-row" id="templatesRow"></div>
+
+    <div class="debt-row" id="debtRow">
+      <div class="debt-direction" id="debtDirection">
+        <button class="active" data-dir="owe" onclick="setDebtDirection('owe')">Ми винні</button>
+        <button data-dir="owed" onclick="setDebtDirection('owed')">Нам винні</button>
+      </div>
+      <input type="text" id="debtPerson" placeholder="Кому / хто (напр. банк)">
+    </div>
+
+    <div class="form-row">
+      <input name="desc" id="desc" type="text" placeholder="Назва">
+      <input name="amount" id="amount" type="number" placeholder="Сума" min="0" step="0.01">
+      <select id="amountCurrency" class="amount-currency">
+        <option value="UAH">₴</option>
+        <option value="CZK">Kč</option>
+        <option value="USD">$</option>
+        <option value="EUR">€</option>
+      </select>
+      <select id="category"></select>
+    </div>
+    <div class="recurring-row">
+      <label class="recurring-toggle">
+        <input type="checkbox" id="recurringCheck">
+        <span class="rec-slider"></span>
+      </label>
+      <span class="recurring-label">Щомісячний платіж</span>
+    </div>
+    <div class="form-row" style="margin-top:10px">
+      <button class="add-btn" id="addBtn" onclick="saveTransaction()">Додати ✦</button>
+      <button class="cancel-btn" id="cancelBtn" style="display:none" onclick="cancelEdit()">Скасувати</button>
+    </div>
+  </div>
+
+  <!-- Експорт -->
+  <div class="export-card">
+    <div class="export-title">📥 Експорт у CSV</div>
+    <div class="export-dates">
+      <input type="date" id="exportFrom" class="goal-date-input" placeholder="Від">
+      <span style="color:var(--muted);font-size:0.8rem">—</span>
+      <input type="date" id="exportTo" class="goal-date-input" placeholder="До">
+    </div>
+    <div class="export-btns">
+      <button class="export-btn" onclick="exportCSV('range')">Вибраний період</button>
+      <button class="export-btn" onclick="exportCSV('all')">Всі дані</button>
+    </div>
+  </div>
+
+  <!-- Списки транзакцій -->
+  <div class="transactions">
+    <div class="tx-col income">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 7 13.5 15.5l-5-5L2 17M22 7h-7M22 7v7"/></svg>
+        Доходи
+      </h3>
+      <div class="tx-list" id="incomeList"><div class="empty-msg">Немає записів</div></div>
+    </div>
+    <div class="tx-col expense">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17 13.5 8.5l-5 5L2 7M22 17h-7M22 17v-7"/></svg>
+        Витрати
+      </h3>
+      <div class="tx-list" id="expenseList"><div class="empty-msg">Немає записів</div></div>
+    </div>
+    <div class="tx-col saving">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.3 12A6 6 0 0 0 12 6H8.5A6.5 6.5 0 0 0 2 12.5V14a2 2 0 0 0 2 2h.1A6 6 0 0 0 10 19.9V22h2v-2h2v2h2v-2.1A6 6 0 0 0 20 16.1V16a2 2 0 0 0 2-2v-1.7A6 6 0 0 0 18.3 12Z"/></svg>
+        Заощадження
+      </h3>
+      <div class="tx-list" id="savingList"><div class="empty-msg">Немає записів</div></div>
+    </div>
+    <div class="tx-col investment">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+        Інвестиції
+      </h3>
+      <div class="tx-list" id="investmentList"><div class="empty-msg">Немає записів</div></div>
+    </div>
+    <div class="tx-col debt">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2ZM2 10h20M7 15h2M11 15h4"/></svg>
+        Борги
+      </h3>
+      <div class="tx-list" id="debtList"><div class="empty-msg">Немає записів</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FAB -->
+<button class="fab" onclick="scrollToForm()" title="Додати запис">+</button>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" onerror="window.__fbLoadFailed=true"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" onerror="window.__fbLoadFailed=true"></script>
+<script>
+
+// === Firebase ===
+if (typeof firebase === 'undefined' || window.__fbLoadFailed) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const ct = document.getElementById('connText');
+    const cd = document.getElementById('connDot');
+    if (ct) ct.textContent = 'немає інтернету — дані не збережуться';
+    if (cd) cd.className = 'sync-dot err';
+  });
+}
+
+const _firebaseOk = typeof firebase !== 'undefined' && !window.__fbLoadFailed;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBQfulAf2VBQRRMzanN1JILLFKwtdaHbL0",
+  authDomain: "solar-finance-v2.firebaseapp.com",
+  projectId: "solar-finance-v2",
+  storageBucket: "solar-finance-v2.firebasestorage.app",
+  messagingSenderId: "3715994912",
+  appId: "1:3715994912:web:afb6ab2ebd14be30a9f345"
+};
+
+let db, txCol, txQuery, templatesCol, settingsRef;
+try {
+  if (_firebaseOk) {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    txCol = db.collection("transactions");
+    txQuery = txCol.orderBy("date", "asc");
+    templatesCol = db.collection("templates");
+    settingsRef = db.collection("settings").doc("shared");
+  }
+} catch(e) { console.error('Firebase init error:', e); }
+
+// === Phosphor Icons (iOS style, filled thin) ===
+const ICON_PATHS = {
+  briefcase: 'M20 7H16V6a4 4 0 0 0-8 0v1H4a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1ZM10 6a2 2 0 0 1 4 0v1h-4Zm9 14H5V9h14Z',
+  laptop: 'M20 3H4a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V4a1 1 0 0 0-1-1Zm-1 12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5h14Zm2 3H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Z',
+  gift: 'M20.5 9H17a3.5 3.5 0 0 0 0-7 3.6 3.6 0 0 0-2.6 1.1L12.9 5H11a1 1 0 0 0 0 2h1v2H4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a2 2 0 0 0 2-2v-2a2 2 0 0 0-1.5-2Zm-6-3.5A1.5 1.5 0 0 1 17 4a1.5 1.5 0 0 1 0 3h-2.5ZM4 11h7v2H4Zm2 9v-5h5v5Zm12 0h-5v-5h5Zm1.5-7H13v-2h7.5Z',
+  building: 'M3 21V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v16M9 21v-6h6v6M9 7h2M9 11h2M13 7h2M13 11h2',
+  cart: 'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0',
+  home: 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM9 22V12h6v10',
+  car: 'M19 17H5a2 2 0 0 1-2-2V9l3-5h12l3 5v6a2 2 0 0 1-2 2ZM16 17v2M8 17v2M3 9h18M7.5 13.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0Zm7 0a1 1 0 1 0 2 0 1 1 0 0 0-2 0Z',
+  utensils: 'M3 11l19-9-9 19-2-8-8-2ZM3 11l7.5 7.5',
+  heart: 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z',
+  cap: 'M22 10v6M2 10l10-5 10 5-10 5-10-5ZM6 12v5c3 3 9 3 12 0v-5',
+  gamepad: 'M6 12h4M8 10v4M15 11h.01M18 11h.01M6.5 8h11a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2Z',
+  shirt: 'M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23Z',
+  phone: 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.71 3.29 2 2 0 0 1 3.68 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6.08 6.08l1.06-1.04a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 15.92Z',
+  zap: 'M13 2 3 14h9l-1 8 10-12h-9l1-8Z',
+  card: 'M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2ZM2 10h20M7 15h2M11 15h4',
+  piggy: 'M18.3 12A6 6 0 0 0 12 6H8.5A6.5 6.5 0 0 0 2 12.5V14a2 2 0 0 0 2 2h.1A6 6 0 0 0 10 19.9V22h2v-2h2v2h2v-2.1A6 6 0 0 0 20 16.1V16a2 2 0 0 0 2-2v-1.7A6 6 0 0 0 18.3 12ZM15 12.5a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z',
+  shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z',
+  target: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12ZM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z',
+  palm: 'M17 8C8 10 5.9 16.17 3.82 19.82A1 1 0 0 0 5 21a1 1 0 0 0 .8-.4l.05-.07A1 1 0 0 1 7.61 21 1 1 0 0 0 8 21.84V22h2v-.18a1 1 0 0 1 .4-.82A10 10 0 0 0 14 13a10 10 0 0 0 3-5Z',
+  chart: 'M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3',
+  crypto: 'M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727',
+  gem: 'M6 3h12l4 6-10 12L2 9l4-6ZM2 9h20M6 3l4 6M18 3l-4 6m-4 0 2 11M12 9l-2 11',
+  sparkle: 'M12 3v4m0 10v4M4.22 4.22l2.83 2.83m9.9 9.9 2.83 2.83M3 12h4m10 0h4M4.22 19.78l2.83-2.83m9.9-9.9 2.83-2.83',
+  trendUp: 'M22 7 13.5 15.5l-5-5L2 17M22 7h-7M22 7v7',
+  trendDown: 'M22 17 13.5 8.5l-5 5L2 7M22 17h-7M22 17v-7',
+  arrowUpCircle: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm0-14v8M8 12l4-4 4 4',
+  arrowDownCircle: 'M12 2a10 10 0 1 1 0 20A10 10 0 0 1 12 2Zm0 14V8m4 4-4 4-4-4'
+};
+function iconSvg(name) {
+  const d = ICON_PATHS[name] || ICON_PATHS.sparkle;
+  return `<path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
+
+// === Категорії ===
+const CATEGORIES = {
+  income: [
+    { id: 'salary', label: 'Зарплата', icon: 'briefcase' },
+    { id: 'freelance', label: 'Фріланс', icon: 'laptop' },
+    { id: 'gift', label: 'Подарунок', icon: 'gift' },
+    { id: 'rent', label: 'Оренда', icon: 'building' }
+  ],
+  expense: [
+    { id: 'groceries', label: 'Продукти', icon: 'cart' },
+    { id: 'housing', label: 'Житло', icon: 'home' },
+    { id: 'transport', label: 'Транспорт', icon: 'car' },
+    { id: 'food', label: 'Їжа', icon: 'utensils' },
+    { id: 'health', label: 'Здоров\u2019я', icon: 'heart' },
+    { id: 'education', label: 'Навчання', icon: 'cap' },
+    { id: 'entertainment', label: 'Розваги', icon: 'gamepad' },
+    { id: 'clothes', label: 'Одяг', icon: 'shirt' },
+    { id: 'phone', label: 'Телефон', icon: 'phone' },
+    { id: 'utilities', label: 'Комунальні', icon: 'zap' }
+  ],
+  saving: [
+    { id: 'general', label: 'Загальні заощадження', icon: 'piggy' },
+    { id: 'emergency', label: 'Подушка безпеки', icon: 'shield' },
+    { id: 'goal', label: 'Ціль / мрія', icon: 'target' },
+    { id: 'vacation', label: 'Відпустка', icon: 'palm' }
+  ],
+  investment: [
+    { id: 'stocks', label: 'Акції / ETF', icon: 'chart' },
+    { id: 'crypto', label: 'Криптовалюта', icon: 'crypto' },
+    { id: 'realestate', label: 'Нерухомість', icon: 'building' },
+    { id: 'metals', label: 'Метали / Золото', icon: 'gem' },
+    { id: 'other', label: 'Інше', icon: 'sparkle' }
+  ],
+  debt: [
+    { id: 'personal', label: 'Особистий борг', icon: 'card' },
+    { id: 'bank', label: 'Банк / кредит', icon: 'building' },
+    { id: 'agency', label: 'Агентство / робота', icon: 'briefcase' },
+    { id: 'other', label: 'Інше', icon: 'sparkle' }
+  ]
+};
+function getCategory(type, categoryId) { return (CATEGORIES[type] || []).find(c => c.id === categoryId) || null; }
+function getIconName(type, categoryId) {
+  const cat = getCategory(type, categoryId);
+  if (cat) return cat.icon;
+  return type === 'income' ? 'arrowUpCircle' : 'arrowDownCircle';
+}
+function getCategoryLabel(type, categoryId) {
+  const cat = getCategory(type, categoryId);
+  if (cat) return cat.label;
+  return categoryId || '';
+}
+
+// === Валюти та курси ===
+const CURRENCIES = {
+  UAH: { symbol: '₴', position: 'after' },
+  CZK: { symbol: 'Kč', position: 'after' },
+  USD: { symbol: '$', position: 'before' },
+  EUR: { symbol: '€', position: 'after' }
+};
+const FALLBACK_RATES = { EUR: 1, USD: 1.08, CZK: 25.0, UAH: 43.5 };
+let rates = { ...FALLBACK_RATES };
+let currentCurrency = 'UAH';
+
+function formatNum(n) {
+  return n.toLocaleString('uk-UA', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
+function formatMoney(n, sign = '') {
+  const cur = CURRENCIES[currentCurrency] || CURRENCIES.UAH;
+  const num = formatNum(Math.abs(n));
+  return cur.position === 'before' ? `${sign}${cur.symbol}${num}` : `${sign}${num} ${cur.symbol}`;
+}
+function formatMoneyIn(amount, code, sign = '') {
+  const cur = CURRENCIES[code] || CURRENCIES.UAH;
+  const num = formatNum(Math.abs(amount));
+  return cur.position === 'before' ? `${sign}${cur.symbol}${num}` : `${sign}${num} ${cur.symbol}`;
+}
+function convert(amount, from, to) {
+  from = from || 'UAH';
+  to = to || currentCurrency;
+  if (from === to) return amount;
+  const r1 = rates[from], r2 = rates[to];
+  if (!r1 || !r2) return amount;
+  return amount / r1 * r2;
+}
+async function fetchRates() {
+  try {
+    const cached = localStorage.getItem('fxRates');
+    const cachedTime = localStorage.getItem('fxRatesTime');
+    if (cached && cachedTime && Date.now() - Number(cachedTime) < 12 * 60 * 60 * 1000) {
+      rates = JSON.parse(cached);
+      render();
+      return;
+    }
+    const res = await fetch('https://open.er-api.com/v6/latest/EUR');
+    const data = await res.json();
+    if (data && data.rates) {
+      rates = { EUR: 1, USD: data.rates.USD, CZK: data.rates.CZK, UAH: data.rates.UAH };
+      localStorage.setItem('fxRates', JSON.stringify(rates));
+      localStorage.setItem('fxRatesTime', String(Date.now()));
+      render();
+    }
+  } catch (e) {
+    console.warn('FX rate fetch failed, using fallback rates', e);
+  }
+}
+fetchRates();
+
+async function setCurrency(code) {
+  currentCurrency = code;
+  render();
+  try { if (_firebaseOk && settingsRef) await settingsRef.set({ currency: code }, { merge: true }); } catch (e) { console.error(e); }
+}
+
+// === Зорі ===
+const starsEl = document.getElementById('stars');
+const starColors = ['#ffffff', '#a78bfa', '#60a5fa', '#fbbf24'];
+for (let i = 0; i < 130; i++) {
+  const s = document.createElement('div');
+  const big = Math.random() < 0.08;
+  s.className = 'star' + (big ? ' glow' : '');
+  const size = big ? Math.random() * 2 + 2 : Math.random() * 2 + 0.5;
+  const color = big ? starColors[Math.floor(Math.random() * starColors.length)] : '#ffffff';
+  s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;background:${color};color:${color};--o:${Math.random()*0.6+0.2};--d:${Math.random()*4+2}s;animation-delay:${Math.random()*4}s;`;
+  starsEl.appendChild(s);
+}
+
+// === Стан ===
+let currentType = 'income';
+let debtDirection = 'owe'; // 'owe' = ми винні, 'owed' = нам винні
+let transactions = [];
+let templates = [];
+let editingId = null;
+let savingsGoal = 0;
+let budgets = {};
+let viewMode = 'month'; // 'month' | 'all'
+let monthOffset = 0; // 0 = поточний місяць, -1 = попередній...
+let currentUser = localStorage.getItem('solarUser') || null;
+
+const MONTH_NAMES = ['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+
+function setUser(u) {
+  currentUser = u;
+  localStorage.setItem('solarUser', u);
+  updateUserButtons();
+}
+function updateUserButtons() {
+  document.getElementById('whoA').className = 'who-btn' + (currentUser === 'a' ? ' active-a' : '');
+  document.getElementById('whoB').className = 'who-btn' + (currentUser === 'b' ? ' active-b' : '');
+}
+updateUserButtons();
+
+function setType(type) {
+  currentType = type;
+  document.querySelectorAll('.type-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.type === type));
+  populateCategories(type);
+  document.getElementById('debtRow').classList.toggle('visible', type === 'debt');
+}
+function setDebtDirection(dir) {
+  debtDirection = dir;
+  document.querySelectorAll('#debtDirection button').forEach(btn => btn.classList.toggle('active', btn.dataset.dir === dir));
+}
+function populateCategories(type) {
+  const sel = document.getElementById('category');
+  sel.innerHTML = '<option value="">Категорія</option>';
+  (CATEGORIES[type] || []).forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat.id;
+    opt.textContent = cat.label;
+    sel.appendChild(opt);
+  });
+}
+populateCategories('income');
+
+function formatDate(ts) {
+  const d = new Date(ts);
+  return `${d.getDate().toString().padStart(2,'0')}.${(d.getMonth()+1).toString().padStart(2,'0')} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+}
+
+// === Навігація по місяцях ===
+function getMonthRange(offset) {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth() + offset;
+  return { start: new Date(y, m, 1).getTime(), end: new Date(y, m + 1, 1).getTime() };
+}
+function updateMonthLabel() {
+  const label = document.getElementById('monthLabel');
+  const nextBtn = document.getElementById('nextMonthBtn');
+  const allBtn = document.getElementById('allTimeBtn');
+  if (viewMode === 'all') {
+    label.textContent = 'Весь час';
+    allBtn.classList.add('active');
+    nextBtn.disabled = true;
+  } else {
+    const now = new Date();
+    const d = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
+    label.textContent = `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
+    allBtn.classList.remove('active');
+    nextBtn.disabled = (monthOffset >= 0);
+  }
+}
+function prevMonth() { viewMode = 'month'; monthOffset -= 1; render(); }
+function nextMonth() { if (viewMode === 'month' && monthOffset < 0) { monthOffset += 1; render(); } }
+function toggleAllTime() {
+  viewMode = viewMode === 'all' ? 'month' : 'all';
+  if (viewMode === 'month') monthOffset = 0;
+  render();
+}
+function sumConverted(items) {
+  return items.reduce((s, t) => s + convert(t.amount, t.currency || 'UAH', currentCurrency), 0);
+}
+
+// === Firestore: транзакції ===
+const connDot = document.getElementById('connDot');
+const connText = document.getElementById('connText');
+
+if (_firebaseOk && txQuery) {
+  txQuery.onSnapshot((snapshot) => {
+    transactions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    connDot.className = 'sync-dot ok';
+    connText.textContent = 'синхронізовано';
+    setTimeout(checkRecurringPayments, 1000);
+    render();
+  }, (error) => {
+    connDot.className = 'sync-dot err';
+    connText.textContent = "помилка з'єднання";
+    console.error(error);
+  });
+
+  settingsRef.onSnapshot((snap) => {
+    const data = snap.exists ? snap.data() : {};
+    currentCurrency = data.currency && CURRENCIES[data.currency] ? data.currency : 'UAH';
+    savingsGoal = data.savingsGoal || 0;
+    budgets = data.budgets || {};
+    goals = Array.isArray(data.goals) ? data.goals : [];
+    const sel = document.getElementById('currencySelect');
+    if (sel) sel.value = currentCurrency;
+    const ac = document.getElementById('amountCurrency');
+    if (ac && document.activeElement !== ac) ac.value = currentCurrency;
+    render();
+  }, (error) => console.error(error));
+
+  templatesCol.onSnapshot((snap) => {
+    templates = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderTemplates();
+  }, (error) => console.error(error));
+}
+
+// === Додавання / редагування ===
+async function saveTransaction() {
+  const desc = document.getElementById('desc').value.trim();
+  const amount = parseFloat(document.getElementById('amount').value);
+  const category = document.getElementById('category').value;
+  const currency = document.getElementById('amountCurrency').value;
+  const isDebt = currentType === 'debt';
+  const debtPerson = document.getElementById('debtPerson').value.trim();
+
+  if (!desc || isNaN(amount) || amount <= 0 || !currentUser || (isDebt && !debtPerson)) {
+    document.getElementById('desc').style.borderColor = '#f87171';
+    document.getElementById('amount').style.borderColor = '#f87171';
+    if (!currentUser) {
+      document.getElementById('whoA').style.borderColor = '#f87171';
+      document.getElementById('whoB').style.borderColor = '#f87171';
+    }
+    if (isDebt && !debtPerson) {
+      document.getElementById('debtPerson').style.borderColor = '#f87171';
+    }
+    setTimeout(() => {
+      document.getElementById('desc').style.borderColor = '';
+      document.getElementById('amount').style.borderColor = '';
+      document.getElementById('whoA').style.borderColor = '';
+      document.getElementById('whoB').style.borderColor = '';
+      document.getElementById('debtPerson').style.borderColor = '';
+    }, 1200);
+    return;
+  }
+
+  const addBtn = document.getElementById('addBtn');
+  const wasEditing = !!editingId;
+  addBtn.disabled = true;
+  addBtn.textContent = wasEditing ? 'Зберігаю...' : 'Додаю...';
+
+  const payload = { type: currentType, desc, amount, category, currency, author: currentUser };
+  if (isDebt) {
+    payload.debtPerson = debtPerson;
+    payload.debtDirection = debtDirection;
+  }
+  const isRecurring = document.getElementById('recurringCheck').checked;
+  if (isRecurring) payload.recurring = true;
+
+  try {
+    if (!_firebaseOk || !txCol) throw new Error('Firebase недоступний. Перевір інтернет.');
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Час вийшов. Перевір інтернет.')), 8000));
+    if (wasEditing) {
+      await Promise.race([txCol.doc(editingId).update(payload), timeoutPromise]);
+      editingId = null;
+      document.getElementById('cancelBtn').style.display = 'none';
+    } else {
+      payload.date = Date.now();
+      await Promise.race([txCol.add(payload), timeoutPromise]);
+    }
+    document.getElementById('desc').value = '';
+    document.getElementById('amount').value = '';
+    document.getElementById('category').value = '';
+    document.getElementById('debtPerson').value = '';
+    document.getElementById('recurringCheck').checked = false;
+  } catch (e) {
+    alert('Помилка: ' + e.message);
+  } finally {
+    addBtn.disabled = false;
+    addBtn.textContent = 'Додати ✦';
+  }
+}
+
+function editTransaction(id) {
+  const t = transactions.find(x => x.id === id);
+  if (!t) return;
+  currentType = t.type;
+  document.querySelectorAll('.type-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.type === t.type));
+  populateCategories(t.type);
+  document.getElementById('debtRow').classList.toggle('visible', t.type === 'debt');
+  document.getElementById('desc').value = t.desc;
+  document.getElementById('amount').value = t.amount;
+  document.getElementById('amountCurrency').value = t.currency || 'UAH';
+  document.getElementById('category').value = t.category || '';
+  if (t.type === 'debt') {
+    document.getElementById('debtPerson').value = t.debtPerson || '';
+    setDebtDirection(t.debtDirection || 'owe');
+  }
+  document.getElementById('recurringCheck').checked = !!t.recurring;
+  editingId = id;
+  document.getElementById('addBtn').textContent = 'Зберегти';
+  document.getElementById('cancelBtn').style.display = 'inline-block';
+  document.getElementById('desc').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('desc').focus();
+}
+function cancelEdit() {
+  editingId = null;
+  document.getElementById('desc').value = '';
+  document.getElementById('amount').value = '';
+  document.getElementById('category').value = '';
+  document.getElementById('debtPerson').value = '';
+  document.getElementById('addBtn').textContent = 'Додати ✦';
+  document.getElementById('cancelBtn').style.display = 'none';
+}
+async function deleteTransaction(id) {
+  try { if (_firebaseOk && txCol) await txCol.doc(id).delete(); } catch (e) { alert('Помилка видалення: ' + e.message); }
+}
+
+// === Шаблони ===
+function renderTemplates() {
+  const row = document.getElementById('templatesRow');
+  const chips = templates.map(tpl => {
+    const icon = iconSvg(getIconName(tpl.type, tpl.category));
+    return `<div class="template-chip" onclick="useTemplate('${tpl.id}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon}</svg>
+      <span>${tpl.desc}</span>
+      <button class="tpl-del" onclick="event.stopPropagation(); deleteTemplate('${tpl.id}')" title="Видалити шаблон">✕</button>
+    </div>`;
+  }).join('');
+  row.innerHTML = chips + `<div class="template-add" onclick="saveCurrentAsTemplate()">+ Шаблон</div>`;
+}
+function useTemplate(id) {
+  const tpl = templates.find(t => t.id === id);
+  if (!tpl) return;
+  currentType = tpl.type;
+  document.querySelectorAll('.type-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.type === tpl.type));
+  populateCategories(tpl.type);
+  document.getElementById('category').value = tpl.category || '';
+  document.getElementById('desc').value = tpl.desc || '';
+  document.getElementById('amount').focus();
+}
+async function saveCurrentAsTemplate() {
+  const desc = document.getElementById('desc').value.trim();
+  const category = document.getElementById('category').value;
+  if (!desc) {
+    document.getElementById('desc').style.borderColor = '#f87171';
+    setTimeout(() => { document.getElementById('desc').style.borderColor = ''; }, 1200);
+    return;
+  }
+  try { if (_firebaseOk && templatesCol) await templatesCol.add({ type: currentType, category, desc }); } catch (e) { console.error(e); }
+}
+async function deleteTemplate(id) {
+  try { if (_firebaseOk && templatesCol) await templatesCol.doc(id).delete(); } catch (e) { console.error(e); }
+}
+
+// === Цілі та бюджети ===
+function toggleGoals() {
+  const panel = document.getElementById('goalsPanel');
+  const arrow = document.getElementById('goalsArrow');
+  const open = panel.style.display !== 'none';
+  panel.style.display = open ? 'none' : 'block';
+  arrow.textContent = open ? '▾' : '▴';
+}
+
+// === ЦІЛІ (мульти) ===
+let goals = []; // [{id, name, amount, deadline}]
+
+async function addGoal() {
+  const name = document.getElementById('goalName').value.trim();
+  const amount = parseFloat(document.getElementById('goalAmount').value);
+  const deadline = document.getElementById('goalDeadline').value;
+  if (!name || isNaN(amount) || amount <= 0) {
+    document.getElementById('goalName').style.borderColor = '#f87171';
+    setTimeout(() => { document.getElementById('goalName').style.borderColor = ''; }, 1200);
+    return;
+  }
+  const newGoal = { name, amount, deadline: deadline || null, createdAt: Date.now() };
+  goals.push({ id: 'g_' + Date.now(), ...newGoal });
+  document.getElementById('goalName').value = '';
+  document.getElementById('goalAmount').value = '';
+  document.getElementById('goalDeadline').value = '';
+  await saveGoals();
+  render();
+}
+
+async function deleteGoal(id) {
+  goals = goals.filter(g => g.id !== id);
+  await saveGoals();
+  render();
+}
+
+async function saveGoals() {
+  try {
+    if (_firebaseOk && settingsRef) {
+      await settingsRef.set({ goals }, { merge: true });
+    }
+  } catch(e) { console.error(e); }
+}
+
+async function updateBudget(catId, value) {
+  budgets[catId] = Number(value) || 0;
+  try { if (_firebaseOk && settingsRef) await settingsRef.set({ budgets }, { merge: true }); } catch (e) { console.error(e); }
+  render();
+}
+
+function renderGoalsAndBudgets() {
+  // Загальна сума заощаджень (всі часи)
+  const allSaving = sumConverted(transactions.filter(t => t.type === 'saving'));
+
+  // Рендер цілей
+  const goalsList = document.getElementById('goalsList');
+  if (!goals.length) {
+    goalsList.innerHTML = '<div class="empty-msg" style="padding:10px 0">Немає цілей — додай першу!</div>';
+  } else {
+    goalsList.innerHTML = goals.map(g => {
+      const pct = Math.min(100, (allSaving / g.amount) * 100);
+      const remaining = Math.max(0, g.amount - allSaving);
+
+      // Клас прогресу
+      let cls = 'good';
+      if (pct >= 100) cls = 'over';
+      else if (pct >= 60) cls = 'great';
+      else if (pct < 25) cls = 'warn';
+
+      // Дедлайн
+      let deadlineHtml = '';
+      let rateHtml = '';
+      if (g.deadline) {
+        const deadlineDate = new Date(g.deadline);
+        const today = new Date();
+        const daysLeft = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
+        let daysClass = 'ok', daysLabel = '';
+        if (pct >= 100) {
+          daysClass = 'done'; daysLabel = '✅ Ціль досягнута!';
+        } else if (daysLeft < 0) {
+          daysClass = 'urgent'; daysLabel = `⚠️ Прострочено на ${Math.abs(daysLeft)} дн.`;
+        } else if (daysLeft <= 30) {
+          daysClass = 'urgent'; daysLabel = `🔥 ${daysLeft} дн. залишилось`;
+        } else if (daysLeft <= 90) {
+          daysClass = 'soon'; daysLabel = `⏳ ${daysLeft} дн. залишилось`;
+        } else {
+          daysClass = 'ok'; daysLabel = `📅 ${daysLeft} дн. залишилось`;
+        }
+
+        // Потрібно відкладати X на місяць
+        if (daysLeft > 0 && pct < 100) {
+          const monthsLeft = Math.max(1, daysLeft / 30);
+          const neededPerMonth = remaining / monthsLeft;
+          rateHtml = `<span class="goal-rate">Потрібно ~${formatMoney(neededPerMonth)}/міс</span>`;
+        }
+
+        const deadlineFormatted = deadlineDate.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short', year: 'numeric' });
+        deadlineHtml = `
+        <div class="goal-deadline">
+          <span class="goal-days ${daysClass}">${daysLabel}</span>
+          <span style="color:var(--muted)">${deadlineFormatted}</span>
+        </div>`;
+      }
+
+      return `
+      <div class="goal-card">
+        <div class="goal-card-header">
+          <span class="goal-card-name">${g.name}</span>
+          <button class="goal-card-del" onclick="deleteGoal('${g.id}')">✕</button>
+        </div>
+        <div class="goal-amounts">
+          <span class="goal-current" style="color:${pct>=100?'var(--income)':'var(--saving)'}">${formatMoney(allSaving)}</span>
+          <span class="goal-target">з ${formatMoney(g.amount)}</span>
+          <span class="goal-pct" style="color:${pct>=100?'var(--income)':pct>=60?'var(--saving)':'var(--muted)'}">${pct.toFixed(0)}%</span>
+        </div>
+        <div class="goal-progress-bar">
+          <div class="goal-progress-inner ${cls}" style="width:${pct}%"></div>
+        </div>
+        ${deadlineHtml}
+        ${rateHtml ? `<div style="margin-top:4px;text-align:right">${rateHtml}</div>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  // Бюджети по категоріях
+  const { start, end } = getMonthRange(0);
+  const thisMonthExpenses = transactions.filter(t => t.type === 'expense' && t.date >= start && t.date < end);
+  const spentByCat = {};
+  thisMonthExpenses.forEach(t => {
+    const key = t.category || '_none';
+    spentByCat[key] = (spentByCat[key] || 0) + convert(t.amount, t.currency || 'UAH', currentCurrency);
+  });
+
+  const list = document.getElementById('budgetsList');
+  const active = document.activeElement;
+  const activeCat = active && active.dataset ? active.dataset.budgetCat : null;
+
+  list.innerHTML = CATEGORIES.expense.map(cat => {
+    const limit = budgets[cat.id] || 0;
+    const spent = spentByCat[cat.id] || 0;
+    const icon = iconSvg(cat.icon);
+    let pct = 0, cls = 'ok';
+    if (limit > 0) {
+      pct = Math.min(100, (spent / limit) * 100);
+      cls = spent > limit ? 'over' : (pct >= 70 ? 'warn' : 'ok');
+    }
+    const valueText = limit > 0 ? `${formatMoney(spent)} / ${formatMoney(limit)}` : formatMoney(spent);
+    const inputVal = limit > 0 ? Math.round(limit) : '';
+    return `
+    <div class="budget-row">
+      <div class="budget-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon}</svg>${cat.label}</div>
+      <input type="number" min="0" step="1" placeholder="ліміт" data-budget-cat="${cat.id}" value="${activeCat === cat.id ? active.value : inputVal}" onchange="updateBudget('${cat.id}', this.value)">
+      <div class="progress-track"><div class="progress-fill ${cls}" style="width:${pct}%"></div></div>
+      <div class="budget-value">${valueText}</div>
+    </div>`;
+  }).join('');
+}
+
+
+// === Експорт CSV ===
+function exportCSV(mode = 'all') {
+  const typeLabels = { income: 'Дохід', expense: 'Витрата', saving: 'Заощадження', investment: 'Інвестиція', debt: 'Борг' };
+  let data = [...transactions].sort((a, b) => a.date - b.date);
+
+  if (mode === 'range') {
+    const fromVal = document.getElementById('exportFrom').value;
+    const toVal = document.getElementById('exportTo').value;
+    if (fromVal) { const from = new Date(fromVal).getTime(); data = data.filter(t => t.date >= from); }
+    if (toVal) { const to = new Date(toVal).getTime() + 86400000; data = data.filter(t => t.date < to); }
+  }
+
+  const rows = [['Дата', 'Тип', 'Категорія', 'Опис', 'Сума', 'Валюта', 'Хто', 'Напрямок боргу', 'Особа (борг)', 'Щомісячний']];
+  data.forEach(t => {
+    const debtDirLabel = t.type === 'debt' ? (t.debtDirection === 'owed' ? 'Винні нам' : 'Ми винні') : '';
+    rows.push([
+      new Date(t.date).toLocaleString('uk-UA'),
+      typeLabels[t.type] || t.type,
+      getCategoryLabel(t.type, t.category),
+      t.desc,
+      t.amount,
+      t.currency || 'UAH',
+      t.author === 'a' ? 'Коля' : (t.author === 'b' ? 'Анна' : ''),
+      debtDirLabel,
+      t.debtPerson || '',
+      t.recurring ? 'Так' : ''
+    ]);
+  });
+  const csv = rows.map(r => r.map(cell => {
+    const s = String(cell ?? '');
+    return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }).join(';')).join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const suffix = mode === 'range' ? '_period' : '_all';
+  a.download = `finance${suffix}_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// === Рендер ===
+function getRadii() {
+  const solar = document.getElementById('solarSystem');
+  const small = solar.offsetWidth < 320;
+  return small ? { income: 65, expense: 95 } : { income: 85, expense: 125 };
+}
+
+const tooltip = document.getElementById('tooltip');
+function showTooltip(t) {
+  const authorName = t.author === 'a' ? '🔵 Коля' : (t.author === 'b' ? '🌸 Анна' : '');
+  const catLabel = getCategoryLabel(t.type, t.category);
+  let line = formatMoney(convert(t.amount, t.currency || 'UAH', currentCurrency));
+  if (t.currency && t.currency !== currentCurrency) {
+    line += ` (${formatMoneyIn(t.amount, t.currency)})`;
+  }
+  tooltip.innerHTML = `<b>${t.desc}</b><br>${catLabel}<br>${line}<br>${authorName}`;
+  tooltip.classList.add('visible');
+}
+function hideTooltip() { tooltip.classList.remove('visible'); }
+document.addEventListener('mousemove', e => {
+  tooltip.style.left = (e.clientX + 12) + 'px';
+  tooltip.style.top = (e.clientY + 12) + 'px';
+});
+
+function renderPlanets(orbitId, items, type) {
+  const orbit = document.getElementById(orbitId);
+  orbit.innerHTML = '';
+  if (!items.length) return;
+  const { income, expense } = getRadii();
+  const radius = type === 'income' ? income : expense;
+  const max = Math.min(items.length, 8);
+  for (let i = 0; i < max; i++) {
+    const t = items[i];
+    const angle = (i / max) * 360;
+    const rad = angle * Math.PI / 180;
+    const x = radius * Math.cos(rad);
+    const y = radius * Math.sin(rad);
+    const planet = document.createElement('div');
+    let cls = `planet planet-${type}`;
+    if (t.author === 'a') cls += ' author-a';
+    if (t.author === 'b') cls += ' author-b';
+    planet.className = cls;
+    planet.style.cssText = `width:34px;height:34px;top: calc(50% + ${y}px - 17px);left: calc(50% + ${x}px - 17px);`;
+    planet.innerHTML = `<div class="planet-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${iconSvg(getIconName(t.type, t.category))}</svg></div>`;
+    planet.addEventListener('mouseenter', () => showTooltip(t));
+    planet.addEventListener('mouseleave', hideTooltip);
+    orbit.appendChild(planet);
+  }
+}
+function renderBigPlanet(elId, amountElId, total, iconName) {
+  const el = document.getElementById(elId);
+  const size = total > 0 ? Math.min(76, 38 + Math.sqrt(total) * 1.1) : 34;
+  el.style.width = size + 'px';
+  el.style.height = size + 'px';
+  el.style.opacity = total > 0 ? '1' : '0.45';
+  el.querySelector('svg').innerHTML = iconSvg(iconName);
+  document.getElementById(amountElId).textContent = formatMoney(total);
+}
+function renderList(listId, items, type) {
+  const list = document.getElementById(listId);
+  if (!items.length) {
+    list.innerHTML = '<div class="empty-msg">Немає записів</div>';
+    return;
+  }
+  list.innerHTML = [...items].reverse().map(t => {
+    const authorTag = t.author === 'a' ? '<span class="author-tag a">Коля</span>' : (t.author === 'b' ? '<span class="author-tag b">Анна</span>' : '');
+    const catLabel = getCategoryLabel(t.type, t.category);
+    const icon = iconSvg(getIconName(t.type, t.category));
+    const sign = (type === 'income') ? '+' : (type === 'expense' ? '\u2212' : (type === 'debt' ? (t.debtDirection === 'owed' ? '+' : '\u2212') : ''));
+    const converted = convert(t.amount, t.currency || 'UAH', currentCurrency);
+    let origNote = '';
+    if (t.currency && t.currency !== currentCurrency) {
+      origNote = `<span>(${formatMoneyIn(t.amount, t.currency)})</span>`;
+    }
+    let debtTag = '';
+    if (type === 'debt') {
+      const dirLabel = t.debtDirection === 'owed' ? 'Винен(на) нам' : 'Ми винні';
+      debtTag = `<span class="debt-tag">${dirLabel}${t.debtPerson ? ': ' + t.debtPerson : ''}</span>`;
+    }
+    const recBadge = t.recurring ? '<span class="rec-badge">🔄 щомісяць</span>' : '';
+    return `
+    <div class="tx-item ${type}">
+      <div class="tx-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon}</svg></div>
+      <div class="tx-info">
+        <div class="tx-desc">${t.desc}${catLabel ? ' · ' + catLabel : ''}</div>
+        <div class="tx-meta"><span>${formatDate(t.date)}</span>${authorTag}${debtTag}${recBadge}${origNote}</div>
+      </div>
+      <div class="tx-amount ${type}">${formatMoney(converted, sign)}</div>
+      <div class="tx-actions">
+        <button class="tx-edit" onclick="editTransaction('${t.id}')" title="Редагувати">✎</button>
+        <button class="tx-del" onclick="deleteTransaction('${t.id}')" title="Видалити">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderCategoryBreakdown(expenses, totalExpense) {
+  const container = document.getElementById('catBars');
+  if (!expenses.length || totalExpense <= 0) {
+    container.innerHTML = '<div class="empty-msg">Немає витрат за цей період</div>';
+    return;
+  }
+  const sums = {};
+  expenses.forEach(t => {
+    const key = t.category || '_none';
+    sums[key] = (sums[key] || 0) + convert(t.amount, t.currency || 'UAH', currentCurrency);
+  });
+  const sorted = Object.entries(sums).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  container.innerHTML = sorted.map(([catId, sum]) => {
+    const pct = (sum / totalExpense * 100);
+    const label = getCategoryLabel('expense', catId) || 'Інше';
+    const icon = iconSvg(getIconName('expense', catId));
+    return `
+    <div class="cat-bar-row">
+      <div class="cat-bar-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon}</svg>${label}</div>
+      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct.toFixed(0)}%"></div></div>
+      <div class="cat-bar-value">${formatMoney(sum)} · ${pct.toFixed(0)}%</div>
+    </div>`;
+  }).join('');
+}
+
+function render() {
+  updateMonthLabel();
+  const filtered = getFilteredTransactions();
+
+  const incomes = filtered.filter(t => t.type === 'income');
+  const expenses = filtered.filter(t => t.type === 'expense');
+  const savings = filtered.filter(t => t.type === 'saving');
+  const investments = filtered.filter(t => t.type === 'investment');
+  const debts = filtered.filter(t => t.type === 'debt');
+  const weOwe = debts.filter(t => t.debtDirection !== 'owed');
+  const owedToUs = debts.filter(t => t.debtDirection === 'owed');
+
+  const totalIncome = sumConverted(incomes);
+  const totalExpense = sumConverted(expenses);
+  const totalSaving = sumConverted(savings);
+  const totalInvestment = sumConverted(investments);
+  const totalWeOwe = sumConverted(weOwe);
+  const totalOwedToUs = sumConverted(owedToUs);
+  const netDebt = totalOwedToUs - totalWeOwe;
+  const balance = totalIncome - totalExpense - totalSaving - totalInvestment;
+
+  document.getElementById('statIncome').textContent = formatMoney(totalIncome, '+');
+  document.getElementById('statExpense').textContent = formatMoney(totalExpense, '\u2212');
+  document.getElementById('statSaving').textContent = formatMoney(totalSaving);
+  document.getElementById('statInvestment').textContent = formatMoney(totalInvestment);
+  const debtStatEl = document.getElementById('statDebt');
+  debtStatEl.textContent = formatMoney(netDebt, netDebt >= 0 ? '+' : '\u2212');
+  debtStatEl.style.color = netDebt >= 0 ? 'var(--income)' : 'var(--debt)';
+  const balEl = document.getElementById('statBalance');
+  balEl.textContent = formatMoney(balance, balance >= 0 ? '+' : '\u2212');
+  balEl.style.color = balance >= 0 ? 'var(--sun)' : 'var(--expense)';
+
+  const sunBal = document.getElementById('sunBalance');
+  sunBal.textContent = formatMoney(balance, balance >= 0 ? '+' : '\u2212');
+  sunBal.style.color = balance >= 0 ? '#1a3a1a' : '#3a1a1a';
+
+  renderPlanets('incomeOrbit', incomes, 'income');
+  renderPlanets('expenseOrbit', expenses, 'expense');
+  renderBigPlanet('savingPlanet', 'savingAmount', totalSaving, 'piggy');
+  renderBigPlanet('investmentPlanet', 'investmentAmount', totalInvestment, 'trendUp');
+  renderBigPlanet('debtPlanet', 'debtAmount', totalWeOwe + totalOwedToUs, 'card');
+
+  renderList('incomeList', incomes, 'income');
+  renderList('expenseList', expenses, 'expense');
+  renderList('savingList', savings, 'saving');
+  renderList('investmentList', investments, 'investment');
+  renderList('debtList', debts, 'debt');
+
+  renderCategoryBreakdown(expenses, totalExpense);
+  renderTop3(expenses);
+  render502030(incomes, expenses, savings);
+  renderDebtBreakdown(debts);
+  renderGoalsAndBudgets();
+  renderChart();
+  renderComparison();
+}
+
+function renderDebtBreakdown(debts) {
+  const container = document.getElementById('debtBars');
+  if (!debts.length) {
+    container.innerHTML = '<div class="empty-msg">Немає боргів</div>';
+    return;
+  }
+  const sums = {};
+  debts.forEach(t => {
+    const person = t.debtPerson || 'Невідомо';
+    const signed = convert(t.amount, t.currency || 'UAH', currentCurrency) * (t.debtDirection === 'owed' ? 1 : -1);
+    sums[person] = (sums[person] || 0) + signed;
+  });
+  const maxAbs = Math.max(...Object.values(sums).map(Math.abs), 1);
+  const entries = Object.entries(sums).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+  container.innerHTML = entries.map(([person, net]) => {
+    const pct = (Math.abs(net) / maxAbs * 100).toFixed(0);
+    const positive = net >= 0;
+    const label = positive ? `Винен(на) нам: ${person}` : `Ми винні: ${person}`;
+    const fillColor = positive ? 'linear-gradient(90deg, #15803d, var(--income))' : 'linear-gradient(90deg, #9f1239, var(--debt))';
+    return `
+    <div class="cat-bar-row">
+      <div class="cat-bar-label">${label}</div>
+      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%; background:${fillColor}"></div></div>
+      <div class="cat-bar-value">${formatMoney(Math.abs(net))}</div>
+    </div>`;
+  }).join('');
+}
+
+// Enter для форми
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (document.activeElement.id === 'desc' || document.activeElement.id === 'amount')) {
+    saveTransaction();
+  }
+});
+
+// Перерахунок при зміні розміру екрана
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => { if (transactions.length) render(); }, 200);
+});
+
+updateMonthLabel();
+render();
+
+// === ПОШУК / ФІЛЬТР ===
+let searchQuery = '';
+let filterTypeVal = '';
+
+function onSearch(q) {
+  searchQuery = q.toLowerCase();
+  filterTypeVal = document.getElementById('filterType').value;
+  render();
+}
+
+function getFilteredTransactions() {
+  let list = viewMode === 'all' ? transactions : (() => {
+    const { start, end } = getMonthRange(monthOffset);
+    return transactions.filter(t => t.date >= start && t.date < end);
+  })();
+  if (searchQuery) list = list.filter(t => (t.desc || '').toLowerCase().includes(searchQuery) || (t.debtPerson || '').toLowerCase().includes(searchQuery));
+  if (filterTypeVal) list = list.filter(t => t.type === filterTypeVal);
+  return list;
+}
+
+// === ГРАФІК ===
+let chartInstance = null;
+
+function renderChart() {
+  const canvas = document.getElementById('trendChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const now = new Date();
+  const labels = [];
+  const incomeData = [], expenseData = [], balanceData = [];
+  const MONTHS_UA = ['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Серп','Вер','Жов','Лис','Гру'];
+  for (let i = -5; i <= 0; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+    labels.push(MONTHS_UA[d.getMonth()]);
+    const { start, end } = getMonthRange(i);
+    const monthTx = transactions.filter(t => t.date >= start && t.date < end);
+    const inc = sumConverted(monthTx.filter(t => t.type === 'income'));
+    const exp = sumConverted(monthTx.filter(t => t.type === 'expense'));
+    incomeData.push(Math.round(inc));
+    expenseData.push(Math.round(exp));
+    balanceData.push(Math.round(inc - exp));
+  }
+
+  // Simple canvas chart
+  const W = canvas.offsetWidth || 300;
+  canvas.width = W * window.devicePixelRatio;
+  canvas.height = 120 * window.devicePixelRatio;
+  canvas.style.width = W + 'px';
+  canvas.style.height = '120px';
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+  const pad = { l: 10, r: 10, t: 16, b: 24 };
+  const w = W - pad.l - pad.r;
+  const h = 120 - pad.t - pad.b;
+  const allVals = [...incomeData, ...expenseData, ...balanceData];
+  const maxV = Math.max(...allVals, 1);
+  const minV = Math.min(...allVals.filter(v => v < 0), 0);
+  const range = maxV - minV || 1;
+
+  function xPos(i) { return pad.l + (i / (labels.length - 1)) * w; }
+  function yPos(v) { return pad.t + h - ((v - minV) / range) * h; }
+
+  ctx.clearRect(0, 0, W, 120);
+
+  // Zero line
+  if (minV < 0) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(pad.l, yPos(0));
+    ctx.lineTo(pad.l + w, yPos(0));
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function drawLine(data, color) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    data.forEach((v, i) => { i === 0 ? ctx.moveTo(xPos(i), yPos(v)) : ctx.lineTo(xPos(i), yPos(v)); });
+    ctx.stroke();
+    // Dots
+    data.forEach((v, i) => {
+      ctx.beginPath();
+      ctx.arc(xPos(i), yPos(v), 3, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    });
+  }
+
+  drawLine(incomeData, '#30d5a0');
+  drawLine(expenseData, '#ff6b7a');
+  drawLine(balanceData, '#ffd060');
+
+  // Labels
+  ctx.fillStyle = 'rgba(155,168,196,0.8)';
+  ctx.font = `${10 * (window.devicePixelRatio > 1 ? 0.9 : 1)}px -apple-system, sans-serif`;
+  ctx.textAlign = 'center';
+  labels.forEach((l, i) => { ctx.fillText(l, xPos(i), 120 - 6); });
+}
+
+// === ПОРІВНЯННЯ МІСЯЦІВ ===
+function renderComparison() {
+  const now = new Date();
+  const { start: cs, end: ce } = getMonthRange(0);
+  const { start: ps, end: pe } = getMonthRange(-1);
+  const currTx = transactions.filter(t => t.date >= cs && t.date < ce);
+  const prevTx = transactions.filter(t => t.date >= ps && t.date < pe);
+  const currExp = sumConverted(currTx.filter(t => t.type === 'expense'));
+  const prevExp = sumConverted(prevTx.filter(t => t.type === 'expense'));
+  const currBal = sumConverted(currTx.filter(t => t.type === 'income')) - currExp;
+  const prevBal = sumConverted(prevTx.filter(t => t.type === 'income')) - sumConverted(prevTx.filter(t => t.type === 'expense'));
+
+  const compareEl = document.getElementById('compareVal');
+  const compareSub = document.getElementById('compareSub');
+  if (prevExp > 0) {
+    const diff = ((currExp - prevExp) / prevExp * 100).toFixed(0);
+    const up = currExp > prevExp;
+    compareEl.textContent = (up ? '↑ ' : '↓ ') + Math.abs(diff) + '%';
+    compareEl.style.color = up ? 'var(--expense)' : 'var(--income)';
+    compareSub.textContent = `Витрати: ${formatMoney(currExp)} vs ${formatMoney(prevExp)}`;
+  } else {
+    compareEl.textContent = '—';
+    compareEl.style.color = 'var(--muted)';
+    compareSub.textContent = 'Немає даних за минулий місяць';
+  }
+
+  // Прогноз
+  const forecastEl = document.getElementById('forecastVal');
+  const forecastSub = document.getElementById('forecastSub');
+  const dayOfMonth = now.getDate();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  if (dayOfMonth > 0 && currBal !== 0) {
+    const projected = currBal / dayOfMonth * daysInMonth;
+    forecastEl.textContent = formatMoney(projected, projected >= 0 ? '+' : '−');
+    forecastEl.style.color = projected >= 0 ? 'var(--income)' : 'var(--expense)';
+    forecastSub.textContent = `На основі ${dayOfMonth} з ${daysInMonth} днів`;
+  } else {
+    forecastEl.textContent = '—';
+    forecastEl.style.color = 'var(--muted)';
+    forecastSub.textContent = 'Немає даних';
+  }
+}
+
+// === ОФЛАЙН ===
+function updateOnlineStatus() {
+  const banner = document.getElementById('offlineBanner');
+  if (banner) banner.style.display = navigator.onLine ? 'none' : 'block';
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// === ПОВТОРЮВАНІ ПЛАТЕЖІ ===
+function checkRecurringPayments() {
+  if (!transactions.length) return;
+  const now = new Date();
+  const { start, end } = getMonthRange(0);
+  const recurring = transactions.filter(t => t.recurring);
+  recurring.forEach(async t => {
+    const alreadyThisMonth = transactions.some(x =>
+      x.recurringId === t.id &&
+      x.date >= start && x.date < end
+    );
+    if (!alreadyThisMonth && t.date < start) {
+      try {
+        if (_firebaseOk && txCol) {
+          await txCol.add({
+            type: t.type, desc: t.desc, amount: t.amount,
+            category: t.category, currency: t.currency || 'UAH',
+            author: t.author, date: now.getTime(),
+            recurringId: t.id, autoAdded: true
+          });
+        }
+      } catch(e) { console.error('Recurring error:', e); }
+    }
+  });
+}
+
+// === ТОП-3 ВИТРАТИ ===
+function renderTop3(expenses) {
+  const el = document.getElementById('top3List');
+  if (!expenses.length) { el.innerHTML = '<div class="empty-msg">Немає записів</div>'; return; }
+  const sorted = [...expenses].sort((a, b) =>
+    convert(b.amount, b.currency || 'UAH', currentCurrency) - convert(a.amount, a.currency || 'UAH', currentCurrency)
+  ).slice(0, 3);
+  const ranks = ['r1', 'r2', 'r3'];
+  const medals = ['🥇', '🥈', '🥉'];
+  el.innerHTML = sorted.map((t, i) => `
+    <div class="top3-item">
+      <div class="top3-rank ${ranks[i]}">${medals[i]}</div>
+      <div class="top3-desc">
+        <div class="top3-name">${t.desc}</div>
+        <div class="top3-cat">${getCategoryLabel(t.type, t.category)} · ${formatDate(t.date)}</div>
+      </div>
+      <div class="top3-amount">${formatMoney(convert(t.amount, t.currency || 'UAH', currentCurrency), '−')}</div>
+    </div>`).join('');
+}
+
+// === 50/30/20 ПРАВИЛО ===
+function render502030(incomes, expenses, savings) {
+  const el = document.getElementById('rule502030');
+  const totalIncome = sumConverted(incomes);
+  if (totalIncome <= 0) { el.innerHTML = '<div class="empty-msg">Додай доходи щоб побачити розподіл</div>'; return; }
+  const totalExp = sumConverted(expenses);
+  const totalSav = sumConverted(savings);
+  // Needs = housing+utilities+transport+groceries+health
+  const needsCats = ['housing','utilities','transport','groceries','health'];
+  const needsExp = expenses.filter(t => needsCats.includes(t.category));
+  const wantsExp = expenses.filter(t => !needsCats.includes(t.category));
+  const needs = sumConverted(needsExp);
+  const wants = sumConverted(wantsExp);
+  const save = totalSav;
+  const needsPct = (needs / totalIncome * 100);
+  const wantsPct = (wants / totalIncome * 100);
+  const savePct = (save / totalIncome * 100);
+
+  function statusHtml(actual, target, label) {
+    const diff = actual - target;
+    if (diff <= 0) return `<div class="rule-status rule-ok">✓ В нормі (${actual.toFixed(0)}% з ${target}%)</div>`;
+    if (diff <= 5) return `<div class="rule-status rule-warn">↑ Трохи більше норми (${actual.toFixed(0)}%)</div>`;
+    return `<div class="rule-status rule-over">↑ Перевищення норми на ${diff.toFixed(0)}% (${actual.toFixed(0)}% з ${target}%)</div>`;
+  }
+
+  el.innerHTML = `
+    <div class="rule-bar-row">
+      <div class="rule-bar-label">
+        <span class="rule-bar-name">🏠 Потреби</span>
+        <span class="rule-bar-pcts">${formatMoney(needs)} · ціль ≤50%</span>
+      </div>
+      <div class="rule-bar-track"><div class="rule-bar-fill rule-needs" style="width:${Math.min(100,needsPct)}%"></div></div>
+      ${statusHtml(needsPct, 50, 'Потреби')}
+    </div>
+    <div class="rule-bar-row">
+      <div class="rule-bar-label">
+        <span class="rule-bar-name">🎉 Бажання</span>
+        <span class="rule-bar-pcts">${formatMoney(wants)} · ціль ≤30%</span>
+      </div>
+      <div class="rule-bar-track"><div class="rule-bar-fill rule-wants" style="width:${Math.min(100,wantsPct)}%"></div></div>
+      ${statusHtml(wantsPct, 30, 'Бажання')}
+    </div>
+    <div class="rule-bar-row">
+      <div class="rule-bar-label">
+        <span class="rule-bar-name">💰 Заощадження</span>
+        <span class="rule-bar-pcts">${formatMoney(save)} · ціль ≥20%</span>
+      </div>
+      <div class="rule-bar-track"><div class="rule-bar-fill rule-save" style="width:${Math.min(100,savePct)}%"></div></div>
+      <div class="rule-status ${savePct >= 20 ? 'rule-ok' : savePct >= 10 ? 'rule-warn' : 'rule-over'}">
+        ${savePct >= 20 ? '✓ Відмінно!' : savePct >= 10 ? `↓ Трохи менше норми (${savePct.toFixed(0)}%)` : `↓ Замало заощаджень (${savePct.toFixed(0)}% з 20%)`}
+      </div>
+    </div>`;
+}
+
+// === ТЕМА ===
+let currentTheme = localStorage.getItem('solarTheme') || 'dark';
+function applyTheme() {
+  document.body.classList.toggle('light', currentTheme === 'light');
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+}
+function toggleTheme() {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('solarTheme', currentTheme);
+  applyTheme();
+}
+applyTheme();
+
+// === PUSH-СПОВІЩЕННЯ ===
+function checkNotifPermission() {
+  if (!('Notification' in window)) return;
+  const banner = document.getElementById('notifBanner');
+  if (Notification.permission === 'default' && banner) {
+    banner.style.display = 'flex';
+  }
+}
+async function requestNotifPermission() {
+  if (!('Notification' in window)) return;
+  const permission = await Notification.requestPermission();
+  const banner = document.getElementById('notifBanner');
+  if (permission === 'granted') {
+    if (banner) banner.style.display = 'none';
+    scheduleNotifications();
+    new Notification('🌌 Фінансовий трекер', {
+      body: 'Сповіщення увімкнено! Будемо нагадувати внести витрати.',
+      icon: '/icon-192.png'
+    });
+  }
+}
+function scheduleNotifications() {
+  // Нагадування щовечора о 21:00
+  const now = new Date();
+  const next = new Date();
+  next.setHours(21, 0, 0, 0);
+  if (next <= now) next.setDate(next.getDate() + 1);
+  const ms = next - now;
+  setTimeout(() => {
+    if (Notification.permission === 'granted') {
+      new Notification('🌌 Не забудь внести витрати!', {
+        body: 'Записуй витрати щодня — так буде точніше.',
+        icon: '/icon-192.png'
+      });
+    }
+    scheduleNotifications(); // плануємо наступне
+  }, ms);
+}
+setTimeout(checkNotifPermission, 2000);
+
+// Глобальний доступ для onclick
+window.setType = setType;
+window.setDebtDirection = setDebtDirection;
+window.setUser = setUser;
+window.setCurrency = setCurrency;
+window.saveTransaction = saveTransaction;
+window.editTransaction = editTransaction;
+window.cancelEdit = cancelEdit;
+window.deleteTransaction = deleteTransaction;
+window.useTemplate = useTemplate;
+window.saveCurrentAsTemplate = saveCurrentAsTemplate;
+window.deleteTemplate = deleteTemplate;
+window.prevMonth = prevMonth;
+window.nextMonth = nextMonth;
+window.toggleAllTime = toggleAllTime;
+window.toggleGoals = toggleGoals;
+window.addGoal = addGoal;
+window.deleteGoal = deleteGoal;
+window.updateBudget = updateBudget;
+window.toggleTheme = toggleTheme;
+window.requestNotifPermission = requestNotifPermission;
+window.exportCSV = exportCSV;
+window.onSearch = onSearch;
+
+
+// === PWA Service Worker ===
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
+// === FAB scroll ===
+function scrollToForm() {
+  document.getElementById('addSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => document.getElementById('desc').focus(), 400);
+}
+window.scrollToForm = scrollToForm;
+
+// === Stars ===
+(function() {
+  const el = document.getElementById('stars');
+  const colors = ['rgba(180,200,255,0.7)', 'rgba(200,160,255,0.6)', 'rgba(150,220,255,0.6)', 'rgba(255,220,150,0.5)'];
+  for (let i = 0; i < 160; i++) {
+    const s = document.createElement('div');
+    const size = Math.random();
+    let cls, sz, style = '';
+    if (size < 0.6) { cls = 's'; sz = Math.random() * 1.2 + 0.4; }
+    else if (size < 0.88) { cls = 'm'; sz = Math.random() * 1.5 + 1.2; }
+    else { cls = 'l'; sz = Math.random() * 2 + 2; style = `--c:${colors[Math.floor(Math.random()*colors.length)]};`; }
+    s.className = `star ${cls}`;
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--o:${Math.random()*0.5+0.2};--d:${Math.random()*5+2}s;animation-delay:${Math.random()*5}s;${style}`;
+    el.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>
